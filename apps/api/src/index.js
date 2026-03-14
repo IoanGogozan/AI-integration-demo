@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
 import { runAiProcessing } from './lib/ai-processing.js';
+import { getDashboardStats } from './lib/dashboard-stats.js';
 import { findEmailWithRelations } from './lib/email-queries.js';
 import { saveUploadedFile } from './lib/file-storage.js';
 import { prisma } from './lib/prisma.js';
@@ -85,6 +86,18 @@ app.get('/emails/:id', async (req, res) => {
       jobs: email.jobs
     }
   });
+});
+
+app.get('/dashboard/stats', async (_req, res) => {
+  try {
+    const stats = await getDashboardStats();
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Dashboard stats failed',
+      details: error.message
+    });
+  }
 });
 
 app.post('/emails/:id/attachments', upload.single('attachment'), async (req, res) => {

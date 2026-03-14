@@ -68,6 +68,7 @@ Current backend endpoints:
 - `GET /health/db`
 - `GET /emails`
 - `GET /emails/:id`
+- `GET /dashboard/stats`
 - `POST /emails/:id/attachments`
 - `POST /emails/:id/process`
 - `PATCH /emails/:id/review`

@@ -31,3 +31,23 @@ export async function getEmail(id) {
     return null;
   }
 }
+
+export async function getDashboardStats() {
+  try {
+    return await request('/dashboard/stats');
+  } catch (error) {
+    console.error(error);
+    return {
+      totals: {
+        cases: 0,
+        attachments: 0,
+        processed: 0,
+        needsReview: 0
+      },
+      byStatus: [],
+      byCategory: [],
+      byPriority: [],
+      reviewItems: []
+    };
+  }
+}
