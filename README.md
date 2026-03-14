@@ -40,6 +40,7 @@ Local setup baseline:
 Frontend note:
 
 - `API_BASE_URL` controls which backend the Next.js app reads from.
+- `NEXT_PUBLIC_API_BASE_URL` controls which backend the browser upload form uses.
 - The default is `http://localhost:4000`.
 
 If port `5432` is already in use on your machine, start PostgreSQL with a different host port, for example:

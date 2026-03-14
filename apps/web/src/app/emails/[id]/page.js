@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { AttachmentUploadForm } from '../../../components/attachment-upload-form';
 import { AppShell } from '../../../components/app-shell';
 import { StatusBadge } from '../../../components/status-badge';
 import { getEmail } from '../../../lib/api';
@@ -80,6 +81,8 @@ export default async function EmailDetailPage({ params }) {
               <h2>Attachments</h2>
               <span className="panel-kicker">Text extracted for review</span>
             </div>
+
+            <AttachmentUploadForm emailId={email.id} />
 
             {email.attachments.length === 0 ? (
               <p className="empty-copy">No attachments are linked to this case yet.</p>
