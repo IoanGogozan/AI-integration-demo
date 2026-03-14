@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
-import { LoginForm } from '../../components/login-form';
 import { getAppSession } from '../../lib/auth';
 import { getLocalizationSummary } from '../../lib/localization';
+import { LoginFormShell } from '../../components/login-form-shell';
 
 export default async function LoginPage() {
   const session = await getAppSession();
@@ -27,7 +27,7 @@ export default async function LoginPage() {
           <p>Admin: admin@norvix.ai / admin1234</p>
         </div>
 
-        <LoginForm />
+        <LoginFormShell />
 
         <p className="auth-copy">
           You can change these credentials in `.env` with the `DEMO_AUTH_*` variables or provide a full `DEMO_AUTH_USERS_JSON`.

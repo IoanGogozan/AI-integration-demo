@@ -804,6 +804,18 @@ a {
   gap: 16px;
 }
 
+.login-form-skeleton {
+  margin-top: 24px;
+  min-height: 280px;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+}
+
 .account-shortcuts {
   display: flex;
   flex-wrap: wrap;
