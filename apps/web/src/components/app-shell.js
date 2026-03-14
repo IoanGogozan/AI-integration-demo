@@ -11,8 +11,14 @@ export function AppShell({ title, eyebrow, description, actions, children }) {
         </div>
 
         <div className="header-actions">
+          <Link href="/overview" className="ghost-link">
+            Overview
+          </Link>
           <Link href="/" className="ghost-link">
             Inbox
+          </Link>
+          <Link href="/results" className="ghost-link">
+            Results
           </Link>
           <Link href="/dashboard" className="ghost-link">
             Dashboard

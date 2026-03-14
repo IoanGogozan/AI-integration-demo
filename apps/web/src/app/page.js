@@ -30,7 +30,7 @@ export default async function HomePage() {
       eyebrow="Phase 2: Inbox"
       title="AI Intake Assistant"
       description="A review-ready inbox for email and document intake workflows aimed at Norwegian SMB operations teams."
-      actions={<span className="app-note">Use the dashboard for demo metrics and review visibility</span>}
+      actions={<span className="app-note">Use overview, results, and dashboard for the full demo narrative</span>}
     >
       <section className="dashboard-strip">
         <article className="summary-card">

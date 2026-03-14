@@ -191,6 +191,91 @@ a {
   gap: 20px;
 }
 
+.showcase-grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr);
+  gap: 20px;
+}
+
+.compact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.spotlight-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.showcase-list {
+  margin-top: 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.showcase-item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 16px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.showcase-item p {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.showcase-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.showcase-case-card,
+.result-gallery-card {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.card-actions {
+  margin-top: 16px;
+}
+
+.result-gallery {
+  margin-top: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.result-stack {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+
+.result-section {
+  margin-top: 18px;
+}
+
+.result-section p {
+  margin: 10px 0 0;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
 .metric-list,
 .review-list {
   margin-top: 20px;
@@ -466,8 +551,14 @@ a {
 
   .dashboard-strip,
   .dashboard-grid,
+  .showcase-grid,
+  .compact-grid,
   .detail-grid,
   .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-stack {
     grid-template-columns: 1fr;
   }
 
