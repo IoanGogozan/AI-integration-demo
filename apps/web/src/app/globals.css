@@ -369,6 +369,39 @@ a {
   margin-top: 18px;
 }
 
+.review-form {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.review-field {
+  display: grid;
+  gap: 8px;
+}
+
+.review-field span {
+  font-weight: 600;
+}
+
+.review-field textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
+
+.review-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .json-preview {
   margin: 12px 0 0;
   padding: 14px;

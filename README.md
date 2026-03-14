@@ -70,3 +70,5 @@ Current backend endpoints:
 - `GET /emails/:id`
 - `POST /emails/:id/attachments`
 - `POST /emails/:id/process`
+- `PATCH /emails/:id/review`
+- `PATCH /emails/:id/status`

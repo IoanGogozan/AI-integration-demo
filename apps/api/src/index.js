@@ -6,6 +6,7 @@ import { runAiProcessing } from './lib/ai-processing.js';
 import { findEmailWithRelations } from './lib/email-queries.js';
 import { saveUploadedFile } from './lib/file-storage.js';
 import { prisma } from './lib/prisma.js';
+import { setEmailStatus, updateAiReview } from './lib/review-actions.js';
 import { serializeEmail } from './lib/serializers.js';
 import { extractTextFromFile } from './lib/text-extraction.js';
 
@@ -168,6 +169,51 @@ app.post('/emails/:id/process', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: 'AI processing failed',
+      details: error.message
+    });
+  }
+});
+
+app.patch('/emails/:id/review', async (req, res) => {
+  try {
+    await updateAiReview(req.params.id, req.body);
+    const updatedEmail = await findEmailWithRelations(req.params.id);
+
+    res.json({
+      item: {
+        ...serializeEmail(updatedEmail),
+        jobs: updatedEmail.jobs
+      }
+    });
+  } catch (error) {
+    const statusCode =
+      error.message === 'Email not found' || error.message === 'No AI result available for review'
+        ? 404
+        : 400;
+
+    res.status(statusCode).json({
+      message: 'Review update failed',
+      details: error.message
+    });
+  }
+});
+
+app.patch('/emails/:id/status', async (req, res) => {
+  try {
+    await setEmailStatus(req.params.id, req.body.status);
+    const updatedEmail = await findEmailWithRelations(req.params.id);
+
+    res.json({
+      item: {
+        ...serializeEmail(updatedEmail),
+        jobs: updatedEmail.jobs
+      }
+    });
+  } catch (error) {
+    const statusCode = error.message === 'Invalid status' ? 400 : 404;
+
+    res.status(statusCode).json({
+      message: 'Status update failed',
       details: error.message
     });
   }

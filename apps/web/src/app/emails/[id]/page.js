@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { AttachmentUploadForm } from '../../../components/attachment-upload-form';
 import { AppShell } from '../../../components/app-shell';
 import { ProcessCaseButton } from '../../../components/process-case-button';
+import { ReviewPanel } from '../../../components/review-panel';
 import { StatusBadge } from '../../../components/status-badge';
 import { getEmail } from '../../../lib/api';
 import { formatDateTime, formatListCount } from '../../../lib/formatters';
@@ -153,6 +154,14 @@ export default async function EmailDetailPage({ params }) {
               </p>
             )}
           </section>
+
+          {email.latestAiResult ? (
+            <ReviewPanel
+              aiResult={email.latestAiResult}
+              currentStatus={email.status}
+              emailId={email.id}
+            />
+          ) : null}
         </aside>
       </section>
     </AppShell>
