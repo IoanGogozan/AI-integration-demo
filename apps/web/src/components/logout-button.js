@@ -2,11 +2,6 @@
 
 import { useState, useTransition } from 'react';
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  process.env.API_BASE_URL ||
-  'http://localhost:4000';
-
 export function LogoutButton() {
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState('info');
@@ -18,7 +13,7 @@ export function LogoutButton() {
 
     startTransition(async () => {
       try {
-        await fetch(`${apiBaseUrl}/auth/logout`, {
+        await fetch('/api/auth/logout', {
           method: 'POST',
           credentials: 'include'
         });

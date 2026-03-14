@@ -2,11 +2,6 @@
 
 import { useState, useTransition } from 'react';
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  process.env.API_BASE_URL ||
-  'http://localhost:4000';
-
 export function LoginForm() {
   const [email, setEmail] = useState('demo@norvix.ai');
   const [password, setPassword] = useState('demo1234');
@@ -21,7 +16,7 @@ export function LoginForm() {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`${apiBaseUrl}/auth/login`, {
+        const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
