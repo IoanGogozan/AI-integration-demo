@@ -1,11 +1,14 @@
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 const defaultApiBaseUrl = process.env.API_BASE_URL || 'http://localhost:4000';
 
 async function request(path) {
-  const requestHeaders = await headers();
-  const cookieHeader = requestHeaders.get('cookie');
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join('; ');
   const response = await fetch(`${defaultApiBaseUrl}${path}`, {
     cache: 'no-store',
     headers: cookieHeader
