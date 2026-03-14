@@ -3,7 +3,7 @@ import { buildIntakePrompt, getIntakeResponseFormat } from '../../../../packages
 import { validateIntakeResult } from '../../../../packages/prompts/src/intake-schema.js';
 
 const apiKey = process.env.OPENAI_API_KEY;
-const model = process.env.OPENAI_MODEL || 'gpt-5.4';
+const model = process.env.OPENAI_MODEL || 'gpt-5-mini';
 
 const client = apiKey ? new OpenAI({ apiKey }) : null;
 
@@ -12,16 +12,21 @@ export async function processEmailWithAi(email) {
     return buildFallbackResult(email);
   }
 
-  const response = await client.responses.create({
+  const requestPayload = {
     model,
     input: buildIntakePrompt(email),
-    reasoning: {
-      effort: 'medium'
-    },
     text: {
       format: getIntakeResponseFormat()
     }
-  });
+  };
+
+  if (supportsReasoningEffort(model)) {
+    requestPayload.reasoning = {
+      effort: 'medium'
+    };
+  }
+
+  const response = await client.responses.create(requestPayload);
 
   const parsed = JSON.parse(response.output_text);
   return validateIntakeResult(parsed);
@@ -111,4 +116,8 @@ function matchValue(text, regex) {
 
 function capitalize(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function supportsReasoningEffort(modelName) {
+  return modelName.startsWith('gpt-5.1');
 }

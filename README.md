@@ -54,7 +54,7 @@ Frontend note:
 AI processing note:
 
 - Set `OPENAI_API_KEY` to enable live OpenAI processing.
-- `OPENAI_MODEL` defaults to `gpt-5.4`.
+- `OPENAI_MODEL` defaults to `gpt-5-mini`.
 - If no API key is set, the app uses a deterministic fallback classifier so the demo still works locally.
 
 Seed dataset note:

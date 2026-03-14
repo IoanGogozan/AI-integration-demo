@@ -56,6 +56,11 @@ Implemented:
 4. Add live OpenAI testing with a real key and prompt tuning based on actual outputs.
 5. Add Norwegian localization after the English MVP behavior is stable.
 
+## Current Cost-Oriented Default
+
+- The default live model is `gpt-5-mini`.
+- The code only sends `reasoning.effort` for `gpt-5.1` models, to avoid compatibility issues with other GPT-5 variants.
+
 ## Repository Pointers
 
 - Product definition: [PRODUCT_BRIEF.md](/d:/Coding%20Apps/AI-Integration/docs/PRODUCT_BRIEF.md)
