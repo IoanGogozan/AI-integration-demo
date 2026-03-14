@@ -244,4 +244,4 @@ Minimum output shape:
 
 ## Immediate Next Step
 
-The next practical step is to scaffold the repository for a local Docker-based JavaScript stack with PostgreSQL, plus a minimal web app and API app structure.
+The MVP baseline is implemented. The next practical step is to polish the demo flow further, add a lightweight automated test layer, and decide whether the next product step is integration work, localization, or authentication.

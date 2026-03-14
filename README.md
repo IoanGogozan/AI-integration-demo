@@ -6,6 +6,8 @@ Start here:
 
 - [docs/PRODUCT_BRIEF.md](/d:/Coding%20Apps/AI-Integration/docs/PRODUCT_BRIEF.md)
 - [docs/IMPLEMENTATION_PLAN.md](/d:/Coding%20Apps/AI-Integration/docs/IMPLEMENTATION_PLAN.md)
+- [docs/DEMO_FLOW.md](/d:/Coding%20Apps/AI-Integration/docs/DEMO_FLOW.md)
+- [docs/HANDOFF_NOTES.md](/d:/Coding%20Apps/AI-Integration/docs/HANDOFF_NOTES.md)
 
 Current technical baseline:
 
@@ -53,6 +55,11 @@ AI processing note:
 - `OPENAI_MODEL` defaults to `gpt-5.4`.
 - If no API key is set, the app uses a deterministic fallback classifier so the demo still works locally.
 
+Seed dataset note:
+
+- `npm run db:setup` loads 12 seeded demo emails with multiple business scenarios.
+- The seed data is designed for sales, support, invoice, contract, complaint, and general admin walkthroughs.
+
 If port `5432` is already in use on your machine, start PostgreSQL with a different host port, for example:
 
 ```powershell
@@ -73,3 +80,13 @@ Current backend endpoints:
 - `POST /emails/:id/process`
 - `PATCH /emails/:id/review`
 - `PATCH /emails/:id/status`
+
+Recommended demo flow:
+
+1. Open the inbox and choose a seeded case.
+2. Review the email and attachment text.
+3. Upload an extra file if needed.
+4. Process the case with AI.
+5. Edit the result in manual review.
+6. Approve or complete the case.
+7. Open the dashboard to show operational visibility.

@@ -153,6 +153,8 @@ The repository should eventually contain:
 - at least 5 to 6 believable business attachments
 - scenarios covering sales, support, invoice clarification, contract intake, and general admin cases
 
+The current seeded dataset should be maintained as a reusable demo asset and expanded only when it improves the quality of the presentation or validates a new product capability.
+
 ## Acceptance Outcome
 
 The MVP is successful when a user can process multiple demo cases end-to-end locally and clearly demonstrate:
