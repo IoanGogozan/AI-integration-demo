@@ -8,7 +8,8 @@
   "scripts": {
     "dev:web": "npm run dev --workspace @ai-integration/web",
     "dev:api": "npm run dev --workspace @ai-integration/api",
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api:managed": "kill-port 4000 && npm run dev:api",
+    "dev": "concurrently \"npm run dev:api:managed\" \"npm run dev:web\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "start:api": "npm run start --workspace @ai-integration/api",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "dotenv-cli": "^7.4.4",
+    "kill-port": "^2.0.1",
     "supertest": "^7.1.1",
     "vitest": "^3.2.4"
   }
