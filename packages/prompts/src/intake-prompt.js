@@ -13,7 +13,7 @@ export function buildIntakePrompt(email) {
         {
           type: 'input_text',
           text:
-            'You are an internal workflow assistant for a B2B operations team. Analyze the incoming email and attached document text. Return only valid JSON that matches the provided schema. Never invent missing values. If a field is unknown, return null and reduce confidence.'
+            'You are an internal workflow assistant for a B2B operations team. Analyze the incoming email and attached document text. Return only valid JSON that matches the provided schema. Never invent missing values. If a field is unknown, return null and reduce confidence. Keep outputs concise, practical, and presentation-ready.'
         }
       ]
     },
@@ -38,6 +38,13 @@ export function buildIntakePrompt(email) {
             '',
             'Attachment text:',
             buildAttachmentSection(email.attachments),
+            '',
+            'Output rules:',
+            '- summary: maximum 2 sentences, ideally under 35 words',
+            '- suggested_next_action: exactly 1 sentence, ideally under 28 words',
+            '- suggested_reply: maximum 2 short sentences, professional and clear',
+            '- extracted_fields.request_type: short phrase, not a full sentence',
+            '- keep wording compact and operational, not verbose',
             '',
             'Return a concise internal summary, the best next action, an editable reply draft, and extracted fields.'
           ].join('\n')
