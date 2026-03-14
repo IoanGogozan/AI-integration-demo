@@ -27,6 +27,27 @@ const emails = [
       'Hi, invoice 2026-1043 includes the wrong billing address. Please review and send an updated copy before March 20.',
     receivedAt: new Date('2026-03-11T10:30:00Z'),
     status: 'needs_review',
+    aiResult: {
+      category: 'invoice_billing',
+      priority: 'medium',
+      summary:
+        'The customer requests a corrected invoice because the billing address is wrong and asks for an updated copy before March 20.',
+      suggestedRoute: 'finance',
+      suggestedNextAction: 'Review the invoice record, correct the billing address, and prepare a replacement PDF.',
+      suggestedReply:
+        'Hello, we reviewed your invoice request and our finance team is preparing an updated copy with the corrected billing address.',
+      confidence: 0.82,
+      extractedJson: {
+        company_name: 'North Support',
+        contact_name: null,
+        contact_email: 'invoice@northsupport.no',
+        phone: null,
+        invoice_number: '2026-1043',
+        amount: 'NOK 18,400',
+        deadline: '2026-03-20',
+        request_type: 'invoice_billing'
+      }
+    },
     attachments: [
       {
         fileName: 'invoice-2026-1043.txt',
@@ -51,7 +72,28 @@ const emails = [
     body:
       'Hello, please review the attached supplier renewal agreement before we send it to the vendor. We need comments by Friday.',
     receivedAt: new Date('2026-03-12T09:20:00Z'),
-    status: 'new',
+    status: 'approved',
+    aiResult: {
+      category: 'contract_agreement',
+      priority: 'medium',
+      summary:
+        'The sender requests a legal review of a supplier renewal agreement and needs comments before the end of the week.',
+      suggestedRoute: 'legal',
+      suggestedNextAction: 'Assign the agreement to legal review and capture comments for procurement before vendor submission.',
+      suggestedReply:
+        'Hello, we received the supplier renewal agreement and our legal review is underway. We will return comments before Friday.',
+      confidence: 0.87,
+      extractedJson: {
+        company_name: 'Nord Supply AS',
+        contact_name: 'Mona',
+        contact_email: 'mona@oslobyran.no',
+        phone: null,
+        invoice_number: null,
+        amount: null,
+        deadline: 'Friday',
+        request_type: 'contract_agreement'
+      }
+    },
     attachments: [
       {
         fileName: 'supplier-renewal-agreement.txt',
@@ -67,7 +109,28 @@ const emails = [
     body:
       'We are comparing vendors for inbox automation. Please send pricing, implementation timeline, and whether you can integrate with our current CRM.',
     receivedAt: new Date('2026-03-12T13:00:00Z'),
-    status: 'new',
+    status: 'approved',
+    aiResult: {
+      category: 'sales_inquiry',
+      priority: 'medium',
+      summary:
+        'The prospect wants pricing, implementation timing, and confirmation of CRM integration capabilities for inbox automation.',
+      suggestedRoute: 'sales',
+      suggestedNextAction: 'Prepare a pilot proposal with pricing range, timeline estimate, and CRM integration scope.',
+      suggestedReply:
+        'Hello, thanks for reaching out. We can share a pilot scope, estimated timeline, and CRM integration approach for your team.',
+      confidence: 0.84,
+      extractedJson: {
+        company_name: 'Vestbygg AS',
+        contact_name: null,
+        contact_email: 'sales@vestbygg.no',
+        phone: null,
+        invoice_number: null,
+        amount: null,
+        deadline: null,
+        request_type: 'sales_inquiry'
+      }
+    },
     attachments: [
       {
         fileName: 'requirements-overview.txt',
@@ -99,7 +162,28 @@ const emails = [
     body:
       'Please prioritize this. Our field technician needs remote portal access restored before 2026-03-18 or project work will stop.',
     receivedAt: new Date('2026-03-13T08:50:00Z'),
-    status: 'new',
+    status: 'needs_review',
+    aiResult: {
+      category: 'support_request',
+      priority: 'high',
+      summary:
+        'A field technician access issue threatens project work, and the sender states the problem must be resolved before 2026-03-18.',
+      suggestedRoute: 'support',
+      suggestedNextAction: 'Create a high-priority support task and verify access restoration before the stated deadline.',
+      suggestedReply:
+        'Hello, we marked this as high priority and our support team is reviewing the access issue now.',
+      confidence: 0.73,
+      extractedJson: {
+        company_name: 'Northgrid',
+        contact_name: null,
+        contact_email: 'operations@northgrid.no',
+        phone: null,
+        invoice_number: null,
+        amount: null,
+        deadline: '2026-03-18',
+        request_type: 'support_request'
+      }
+    },
     attachments: []
   },
   {
@@ -197,6 +281,43 @@ async function main() {
         }
       }
     });
+
+    if (item.aiResult) {
+      await prisma.aiResult.create({
+        data: {
+          emailId: email.id,
+          category: item.aiResult.category,
+          priority: item.aiResult.priority,
+          summary: item.aiResult.summary,
+          suggestedRoute: item.aiResult.suggestedRoute,
+          suggestedNextAction: item.aiResult.suggestedNextAction,
+          suggestedReply: item.aiResult.suggestedReply,
+          confidence: item.aiResult.confidence,
+          extractedJson: item.aiResult.extractedJson
+        }
+      });
+
+      await prisma.processingJob.create({
+        data: {
+          emailId: email.id,
+          status: 'succeeded',
+          startedAt: item.receivedAt,
+          finishedAt: item.receivedAt
+        }
+      });
+
+      await prisma.auditEvent.create({
+        data: {
+          entityType: 'email',
+          entityId: email.id,
+          action: 'seeded_ai_result',
+          payload: {
+            category: item.aiResult.category,
+            priority: item.aiResult.priority
+          }
+        }
+      });
+    }
 
     await prisma.auditEvent.create({
       data: {

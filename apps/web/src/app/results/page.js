@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function ResultsPage() {
   const emails = await getEmails();
   const processedEmails = emails.filter((email) => email.latestAiResult);
+  const totalResults = processedEmails.length;
 
   return (
     <AppShell
@@ -20,6 +21,50 @@ export default async function ResultsPage() {
         </Link>
       }
     >
+      <section className="showcase-grid">
+        <article className="panel spotlight-panel">
+          <div className="panel-header">
+            <h2>Why this page matters</h2>
+            <span className="panel-kicker">Presentation shortcut</span>
+          </div>
+          <div className="metric-list">
+            <div className="metric-row">
+              <span>Processed results ready to show</span>
+              <strong>{totalResults}</strong>
+            </div>
+            <div className="metric-row">
+              <span>Best use</span>
+              <strong>Outcome-first demos</strong>
+            </div>
+            <div className="metric-row">
+              <span>What to highlight</span>
+              <strong>Category, route, summary, draft</strong>
+            </div>
+          </div>
+        </article>
+
+        <article className="panel">
+          <div className="panel-header">
+            <h2>Suggested flow</h2>
+            <span className="panel-kicker">Simple presenter mode</span>
+          </div>
+          <div className="showcase-list">
+            <article className="showcase-item">
+              <span className="showcase-index">01</span>
+              <p>Open one processed result to show the final structured output immediately.</p>
+            </article>
+            <article className="showcase-item">
+              <span className="showcase-index">02</span>
+              <p>Open the linked case if the audience wants to see the original email and attachments.</p>
+            </article>
+            <article className="showcase-item">
+              <span className="showcase-index">03</span>
+              <p>Move to the dashboard to show that these outputs also roll up into operational visibility.</p>
+            </article>
+          </div>
+        </article>
+      </section>
+
       <section className="panel">
         <div className="panel-header">
           <div>

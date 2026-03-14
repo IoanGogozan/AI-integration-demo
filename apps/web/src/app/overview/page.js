@@ -15,6 +15,7 @@ const demoPoints = [
 export default async function OverviewPage() {
   const [stats, emails] = await Promise.all([getDashboardStats(), getEmails()]);
   const highlightedCases = emails.slice(0, 4);
+  const processedCases = emails.filter((email) => email.latestAiResult).slice(0, 3);
 
   return (
     <AppShell
@@ -94,6 +95,39 @@ export default async function OverviewPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>Ready-made AI results</h2>
+            <p className="panel-copy">
+              These processed examples are useful when you want to show the final outcome immediately, without running a live processing step first.
+            </p>
+          </div>
+          <Link href="/results" className="ghost-link">
+            Open results page
+          </Link>
+        </div>
+
+        {processedCases.length === 0 ? (
+          <p className="empty-copy">No seeded AI results are available right now.</p>
+        ) : (
+          <div className="showcase-grid compact-grid">
+            {processedCases.map((email) => (
+              <article className="showcase-case-card" key={email.id}>
+                <p className="row-title">{email.subject}</p>
+                <p className="row-meta">{email.latestAiResult.category.replaceAll('_', ' ')}</p>
+                <p className="row-meta">{email.latestAiResult.summary}</p>
+                <div className="card-actions">
+                  <Link href="/results" className="ghost-link">
+                    View all results
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </AppShell>
   );

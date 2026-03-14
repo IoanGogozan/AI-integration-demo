@@ -61,6 +61,7 @@ Seed dataset note:
 
 - `npm run db:setup` loads 12 seeded demo emails with multiple business scenarios.
 - The seed data is designed for sales, support, invoice, contract, complaint, and general admin walkthroughs.
+- The seed also includes 4 ready-made AI results so the `Results` page is useful immediately after setup.
 
 If port `5432` is already in use on your machine, start PostgreSQL with a different host port, for example:
 
