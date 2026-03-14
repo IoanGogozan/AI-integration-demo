@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 const defaultApiBaseUrl = process.env.API_BASE_URL || 'http://localhost:4000';
 
@@ -13,6 +14,10 @@ async function request(path) {
         }
       : undefined
   });
+
+  if (response.status === 401) {
+    redirect('/login');
+  }
 
   if (!response.ok) {
     throw new Error(`API request failed for ${path} with status ${response.status}`);
