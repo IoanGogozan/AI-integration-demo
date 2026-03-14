@@ -68,6 +68,7 @@ vi.mock('./lib/review-actions.js', () => ({
 describe('createApp', () => {
   beforeEach(() => {
     process.env.AUTH_SECRET = 'test-secret';
+    process.env.ENFORCE_API_AUTH = 'true';
     process.env.DEMO_AUTH_EMAIL = 'demo@norvix.ai';
     process.env.DEMO_AUTH_PASSWORD = 'demo1234';
     process.env.DEMO_AUTH_NAME = 'Demo Operator';

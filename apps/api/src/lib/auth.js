@@ -4,6 +4,10 @@ const sessionCookieName = 'norvix_demo_session';
 const defaultAuthSecret = 'norvix-demo-auth-secret';
 const allowedRoles = new Set(['viewer', 'operator', 'reviewer', 'admin']);
 
+function isApiAuthEnforced() {
+  return process.env.ENFORCE_API_AUTH === 'true';
+}
+
 function getAuthSecret() {
   return process.env.AUTH_SECRET || defaultAuthSecret;
 }
@@ -197,6 +201,11 @@ export function attachSession(req, _res, next) {
 }
 
 export function requireSession(req, res, next) {
+  if (!isApiAuthEnforced()) {
+    next();
+    return;
+  }
+
   if (!req.sessionUser) {
     res.status(401).json({
       message: 'Authentication required'
@@ -211,6 +220,11 @@ export function requireRole(allowed) {
   const allowedSet = new Set(allowed);
 
   return (req, res, next) => {
+    if (!isApiAuthEnforced()) {
+      next();
+      return;
+    }
+
     if (!req.sessionUser) {
       res.status(401).json({
         message: 'Authentication required'

@@ -67,6 +67,8 @@ Authentication note:
 
 - The demo uses a backend session stored in an HttpOnly cookie.
 - Set `AUTH_SECRET` in `.env` so the backend and Next.js server can verify the session cookie.
+- `ENFORCE_API_AUTH=false` is the practical default for local demo mode, because the web app already protects pages and actions.
+- Set `ENFORCE_API_AUTH=true` only if you explicitly want backend route enforcement as well.
 - Default demo roles are:
 - `demo@norvix.ai` / `demo1234` as `operator`
 - `reviewer@norvix.ai` / `review1234` as `reviewer`
