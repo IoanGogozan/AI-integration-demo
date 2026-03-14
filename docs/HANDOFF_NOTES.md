@@ -16,6 +16,7 @@ Implemented:
 - workflow status updates
 - dashboard metrics
 - audit trail
+- automated test baseline for API and AI contract validation
 
 ## Runtime Expectations
 
@@ -43,7 +44,7 @@ Implemented:
 - no CRM, ERP, or ticketing integration
 - no OCR pipeline for complex scanned documents
 - no file cleanup lifecycle for uploaded local files
-- no automated test suite yet
+- no frontend browser e2e coverage yet
 - no true background job runner yet
 - no localization layer yet
 

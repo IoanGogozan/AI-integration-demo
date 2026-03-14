@@ -37,11 +37,13 @@ Local setup baseline:
 3. Install workspace dependencies with `npm install`.
 4. Initialize the database with `npm run db:setup`.
 5. Run both services with `npm run dev`.
+6. Run automated checks with `npm test`.
 
 Optional:
 
 - Run only the API with `npm run dev:api`.
 - Run only the web app with `npm run dev:web`.
+- Run the test watcher with `npm run test:watch`.
 
 Frontend note:
 

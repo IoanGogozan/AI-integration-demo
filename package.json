@@ -9,6 +9,8 @@
     "dev:web": "npm run dev --workspace @ai-integration/web",
     "dev:api": "npm run dev --workspace @ai-integration/api",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "start:api": "npm run start --workspace @ai-integration/api",
     "db:generate": "npm run prisma:generate --workspace @ai-integration/api",
     "db:push": "npm run prisma:push --workspace @ai-integration/api",
@@ -16,6 +18,8 @@
     "db:setup": "npm run db:setup --workspace @ai-integration/api"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "supertest": "^7.1.1",
+    "vitest": "^3.2.4"
   }
 }
