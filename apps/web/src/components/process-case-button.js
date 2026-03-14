@@ -11,10 +11,12 @@ const apiBaseUrl =
 export function ProcessCaseButton({ emailId }) {
   const router = useRouter();
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState('info');
   const [isPending, startTransition] = useTransition();
 
   async function handleClick() {
     setMessage('');
+    setMessageTone('info');
 
     try {
       const response = await fetch(`${apiBaseUrl}/emails/${emailId}/process`, {
@@ -30,12 +32,14 @@ export function ProcessCaseButton({ emailId }) {
       }
 
       setMessage('Case processed and saved.');
+      setMessageTone('success');
       startTransition(() => {
         router.refresh();
       });
     } catch (error) {
       console.error(error);
       setMessage('Processing failed. Verify the API is running and try again.');
+      setMessageTone('error');
     }
   }
 
@@ -44,7 +48,7 @@ export function ProcessCaseButton({ emailId }) {
       <button className="primary-link action-button" disabled={isPending} onClick={handleClick} type="button">
         {isPending ? 'Processing...' : 'Process with AI'}
       </button>
-      {message ? <p className="upload-message">{message}</p> : null}
+      {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </div>
   );
 }

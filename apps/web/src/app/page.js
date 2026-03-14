@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { AppShell } from '../components/app-shell';
 import { getDashboardStats, getEmails } from '../lib/api';
+import { formatLabel } from '../lib/formatters';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const [stats, emails] = await Promise.all([getDashboardStats(), getEmails()]);
   const featuredCase = emails.find((email) => email.latestAiResult) || emails[0] || null;
+  const storyPillars = ['Email intake', 'AI classification', 'Human review'];
 
   const quickLinks = [
     {
@@ -57,15 +59,15 @@ export default async function HomePage() {
           <div className="showcase-list">
             <article className="showcase-item">
               <span className="showcase-index">01</span>
-              <p>Open `Overview` to explain the business story and show why this workflow matters.</p>
+              <p>Open Overview to explain the business story and show why this workflow matters.</p>
             </article>
             <article className="showcase-item">
               <span className="showcase-index">02</span>
-              <p>Move to `Inbox` for the original email, attachment upload, AI processing, and manual review.</p>
+              <p>Move to Inbox for the original email, attachment upload, AI processing, and manual review.</p>
             </article>
             <article className="showcase-item">
               <span className="showcase-index">03</span>
-              <p>Use `Results` and `Dashboard` to show concrete AI output and aggregated operations value.</p>
+              <p>Use Results and Dashboard to show concrete AI output and aggregated operations value.</p>
             </article>
           </div>
         </article>
@@ -100,7 +102,10 @@ export default async function HomePage() {
         {quickLinks.map((item) => (
           <article className="panel quick-link-card" key={item.href}>
             <div className="panel-header">
-              <h2>{item.title}</h2>
+              <div>
+                <span className="panel-kicker">Direct path</span>
+                <h2>{item.title}</h2>
+              </div>
               <Link href={item.href} className="ghost-link">
                 Open
               </Link>
@@ -145,6 +150,19 @@ export default async function HomePage() {
         {featuredCase ? (
           <article className="feature-card">
             <div>
+              <div className="pill-row">
+                {storyPillars.map((item) => (
+                  <span className="info-pill" key={item}>
+                    {item}
+                  </span>
+                ))}
+                {featuredCase.latestAiResult ? (
+                  <>
+                    <span className="info-pill">{formatLabel(featuredCase.latestAiResult.category)}</span>
+                    <span className="info-pill">{formatLabel(featuredCase.latestAiResult.suggestedRoute)}</span>
+                  </>
+                ) : null}
+              </div>
               <p className="row-title">{featuredCase.subject}</p>
               <p className="row-meta">{featuredCase.sender}</p>
               <p className="panel-copy">

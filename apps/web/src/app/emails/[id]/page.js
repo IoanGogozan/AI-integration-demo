@@ -6,7 +6,7 @@ import { ProcessCaseButton } from '../../../components/process-case-button';
 import { ReviewPanel } from '../../../components/review-panel';
 import { StatusBadge } from '../../../components/status-badge';
 import { getEmail } from '../../../lib/api';
-import { formatDateTime, formatListCount } from '../../../lib/formatters';
+import { formatDateTime, formatLabel, formatListCount } from '../../../lib/formatters';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,6 +51,17 @@ export default async function EmailDetailPage({ params }) {
             <h2>Email overview</h2>
             <StatusBadge value={email.status} tone={getStatusTone(email.status)} />
           </div>
+
+          {email.latestAiResult ? (
+            <div className="callout-banner">
+              <div className="pill-row compact-pill-row">
+                <span className="info-pill">{formatLabel(email.latestAiResult.category)}</span>
+                <span className="info-pill">{formatLabel(email.latestAiResult.priority)}</span>
+                <span className="info-pill">{formatLabel(email.latestAiResult.suggestedRoute)}</span>
+              </div>
+              <p>{email.latestAiResult.summary}</p>
+            </div>
+          ) : null}
 
           <dl className="metadata-grid">
             <div>
@@ -106,7 +117,9 @@ export default async function EmailDetailPage({ params }) {
           <section className="panel">
             <div className="panel-header">
               <h2>AI result</h2>
-              <span className="panel-kicker">Phase 4 will populate this panel</span>
+              <span className="panel-kicker">
+                {email.latestAiResult ? 'Latest stored result' : 'Run AI to generate output'}
+              </span>
             </div>
 
             <ProcessCaseButton emailId={email.id} />
@@ -115,11 +128,11 @@ export default async function EmailDetailPage({ params }) {
               <div className="result-preview">
                 <div className="result-row">
                   <span>Category</span>
-                  <strong>{email.latestAiResult.category}</strong>
+                  <strong>{formatLabel(email.latestAiResult.category)}</strong>
                 </div>
                 <div className="result-row">
                   <span>Priority</span>
-                  <strong>{email.latestAiResult.priority}</strong>
+                  <strong>{formatLabel(email.latestAiResult.priority)}</strong>
                 </div>
                 <div className="result-row result-block">
                   <span>Summary</span>
@@ -127,11 +140,16 @@ export default async function EmailDetailPage({ params }) {
                 </div>
                 <div className="result-row">
                   <span>Route</span>
-                  <strong>{email.latestAiResult.suggestedRoute}</strong>
+                  <strong>{formatLabel(email.latestAiResult.suggestedRoute)}</strong>
                 </div>
                 <div className="result-row">
                   <span>Confidence</span>
-                  <strong>{email.latestAiResult.confidence}</strong>
+                  <div className="confidence-stack">
+                    <strong>{email.latestAiResult.confidence}</strong>
+                    <div className="confidence-bar" aria-hidden="true">
+                      <span style={{ width: `${Math.round(email.latestAiResult.confidence * 100)}%` }} />
+                    </div>
+                  </div>
                 </div>
                 <div className="result-row result-block">
                   <span>Next action</span>
@@ -140,6 +158,19 @@ export default async function EmailDetailPage({ params }) {
                 <div className="result-row result-block">
                   <span>Reply draft</span>
                   <p>{email.latestAiResult.suggestedReply}</p>
+                </div>
+                <div className="result-row result-block">
+                  <span>Key fields</span>
+                  <div className="field-grid">
+                    {Object.entries(email.latestAiResult.extractedJson || {})
+                      .filter(([, value]) => value)
+                      .map(([key, value]) => (
+                        <div className="field-card" key={key}>
+                          <span>{formatLabel(key)}</span>
+                          <strong>{String(value)}</strong>
+                        </div>
+                      ))}
+                  </div>
                 </div>
                 <div className="result-row result-block">
                   <span>Extracted fields</span>

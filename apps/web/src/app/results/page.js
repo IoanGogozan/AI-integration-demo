@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { AppShell } from '../../components/app-shell';
 import { getEmails } from '../../lib/api';
-import { formatDateTime } from '../../lib/formatters';
+import { formatDateTime, formatLabel } from '../../lib/formatters';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,7 +78,7 @@ export default async function ResultsPage() {
 
         {processedEmails.length === 0 ? (
           <p className="empty-copy">
-            No processed results yet. Open a case and run `Process with AI` first.
+            No processed results yet. Open a case and run Process with AI first.
           </p>
         ) : (
           <div className="result-gallery">
@@ -96,22 +96,33 @@ export default async function ResultsPage() {
                   </Link>
                 </div>
 
+                <div className="pill-row compact-pill-row">
+                  <span className="info-pill">{formatLabel(email.latestAiResult.category)}</span>
+                  <span className="info-pill">{formatLabel(email.latestAiResult.priority)}</span>
+                  <span className="info-pill">{formatLabel(email.latestAiResult.suggestedRoute)}</span>
+                </div>
+
                 <div className="result-stack">
                   <div className="metric-row">
                     <span>Category</span>
-                    <strong>{email.latestAiResult.category.replaceAll('_', ' ')}</strong>
+                    <strong>{formatLabel(email.latestAiResult.category)}</strong>
                   </div>
                   <div className="metric-row">
                     <span>Priority</span>
-                    <strong>{email.latestAiResult.priority}</strong>
+                    <strong>{formatLabel(email.latestAiResult.priority)}</strong>
                   </div>
                   <div className="metric-row">
                     <span>Route</span>
-                    <strong>{email.latestAiResult.suggestedRoute}</strong>
+                    <strong>{formatLabel(email.latestAiResult.suggestedRoute)}</strong>
                   </div>
                   <div className="metric-row">
                     <span>Confidence</span>
-                    <strong>{email.latestAiResult.confidence}</strong>
+                    <div className="confidence-stack">
+                      <strong>{email.latestAiResult.confidence}</strong>
+                      <div className="confidence-bar" aria-hidden="true">
+                        <span style={{ width: `${Math.round(email.latestAiResult.confidence * 100)}%` }} />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -128,6 +139,20 @@ export default async function ResultsPage() {
                 <div className="result-section">
                   <span className="panel-kicker">Reply draft</span>
                   <p>{email.latestAiResult.suggestedReply}</p>
+                </div>
+
+                <div className="result-section">
+                  <span className="panel-kicker">Key extracted fields</span>
+                  <div className="field-grid">
+                    {Object.entries(email.latestAiResult.extractedJson || {})
+                      .filter(([, value]) => value)
+                      .map(([key, value]) => (
+                        <div className="field-card" key={key}>
+                          <span>{formatLabel(key)}</span>
+                          <strong>{String(value)}</strong>
+                        </div>
+                      ))}
+                  </div>
                 </div>
 
                 <div className="result-section">

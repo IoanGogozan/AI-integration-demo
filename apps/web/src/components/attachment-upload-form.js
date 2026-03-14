@@ -12,11 +12,13 @@ export function AttachmentUploadForm({ emailId }) {
   const formRef = useRef(null);
   const router = useRouter();
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState('info');
   const [isPending, startTransition] = useTransition();
 
   async function handleSubmit(event) {
     event.preventDefault();
     setMessage('');
+    setMessageTone('info');
 
     const formData = new FormData(event.currentTarget);
 
@@ -33,12 +35,14 @@ export function AttachmentUploadForm({ emailId }) {
 
       formRef.current?.reset();
       setMessage('Attachment uploaded and processed.');
+      setMessageTone('success');
       startTransition(() => {
         router.refresh();
       });
     } catch (error) {
       console.error(error);
       setMessage('Upload failed. Verify the API is running and try again.');
+      setMessageTone('error');
     }
   }
 
@@ -57,7 +61,7 @@ export function AttachmentUploadForm({ emailId }) {
       <button className="primary-link upload-button" disabled={isPending} type="submit">
         {isPending ? 'Uploading...' : 'Upload attachment'}
       </button>
-      {message ? <p className="upload-message">{message}</p> : null}
+      {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </form>
   );
 }

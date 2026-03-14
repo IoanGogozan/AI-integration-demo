@@ -14,10 +14,12 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
   const [suggestedNextAction, setSuggestedNextAction] = useState(aiResult.suggestedNextAction);
   const [suggestedReply, setSuggestedReply] = useState(aiResult.suggestedReply);
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState('info');
   const [isPending, startTransition] = useTransition();
 
   async function updateReview() {
     setMessage('');
+    setMessageTone('info');
 
     try {
       const response = await fetch(`${apiBaseUrl}/emails/${emailId}/review`, {
@@ -38,17 +40,20 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
       }
 
       setMessage('Review fields saved.');
+      setMessageTone('success');
       startTransition(() => {
         router.refresh();
       });
     } catch (error) {
       console.error(error);
       setMessage('Review update failed.');
+      setMessageTone('error');
     }
   }
 
   async function updateStatus(status, actionLabel) {
     setMessage('');
+    setMessageTone('info');
 
     try {
       const response = await fetch(`${apiBaseUrl}/emails/${emailId}/status`, {
@@ -67,12 +72,14 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
       }
 
       setMessage(`Case marked as ${status.replaceAll('_', ' ')}.`);
+      setMessageTone('success');
       startTransition(() => {
         router.refresh();
       });
     } catch (error) {
       console.error(error);
       setMessage(`${actionLabel} failed.`);
+      setMessageTone('error');
     }
   }
 
@@ -143,7 +150,7 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
         </button>
       </div>
 
-      {message ? <p className="upload-message">{message}</p> : null}
+      {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </section>
   );
 }

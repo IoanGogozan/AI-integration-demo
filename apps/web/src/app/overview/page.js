@@ -35,9 +35,9 @@ export default async function OverviewPage() {
             <span className="panel-kicker">Commercial framing</span>
           </div>
           <div className="showcase-list">
-            {demoPoints.map((item) => (
+            {demoPoints.map((item, index) => (
               <article className="showcase-item" key={item}>
-                <span className="showcase-index">01</span>
+                <span className="showcase-index">{String(index + 1).padStart(2, '0')}</span>
                 <p>{item}</p>
               </article>
             ))}
@@ -116,6 +116,10 @@ export default async function OverviewPage() {
           <div className="showcase-grid compact-grid">
             {processedCases.map((email) => (
               <article className="showcase-case-card" key={email.id}>
+                <div className="pill-row compact-pill-row">
+                  <span className="info-pill">{email.latestAiResult.priority}</span>
+                  <span className="info-pill">{email.latestAiResult.suggestedRoute}</span>
+                </div>
                 <p className="row-title">{email.subject}</p>
                 <p className="row-meta">{email.latestAiResult.category.replaceAll('_', ' ')}</p>
                 <p className="row-meta">{email.latestAiResult.summary}</p>

@@ -11,11 +11,13 @@ export function LoginForm() {
   const [email, setEmail] = useState('demo@norvix.ai');
   const [password, setPassword] = useState('demo1234');
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState('info');
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(event) {
     event.preventDefault();
     setMessage('');
+    setMessageTone('info');
 
     startTransition(async () => {
       try {
@@ -39,6 +41,7 @@ export function LoginForm() {
       } catch (error) {
         console.error(error);
         setMessage('Login failed. Check the demo credentials and try again.');
+        setMessageTone('error');
       }
     });
   }
@@ -71,7 +74,7 @@ export function LoginForm() {
         {isPending ? 'Signing in...' : 'Sign in'}
       </button>
 
-      {message ? <p className="upload-message">{message}</p> : null}
+      {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </form>
   );
 }

@@ -9,6 +9,13 @@ export function formatStatus(value) {
   return value.replaceAll('_', ' ');
 }
 
+export function formatLabel(value) {
+  return value
+    .replaceAll('_', ' ')
+    .replaceAll('-', ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export function formatListCount(count, singular, plural) {
   return `${count} ${count === 1 ? singular : plural}`;
 }

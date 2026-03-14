@@ -104,6 +104,29 @@ a {
   font-size: 0.9rem;
 }
 
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.compact-pill-row {
+  margin-bottom: 12px;
+}
+
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  color: var(--accent);
+  font-size: 0.88rem;
+}
+
 .app-header h1,
 .panel h2,
 .panel h3 {
@@ -356,6 +379,20 @@ a {
   justify-content: flex-end;
 }
 
+.callout-banner {
+  margin-top: 22px;
+  padding: 18px 20px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 18px;
+  background: rgba(15, 118, 110, 0.07);
+}
+
+.callout-banner p {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
 .result-gallery {
   margin-top: 24px;
   display: grid;
@@ -377,6 +414,52 @@ a {
   margin: 10px 0 0;
   line-height: 1.7;
   color: var(--muted);
+}
+
+.confidence-stack {
+  display: grid;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.confidence-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(27, 29, 31, 0.08);
+  overflow: hidden;
+}
+
+.confidence-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0f766e 0%, #1f9d8f 100%);
+}
+
+.field-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field-card {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.field-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.field-card strong {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
 }
 
 .metric-list,
@@ -602,6 +685,31 @@ a {
   color: var(--muted);
 }
 
+.feedback-message {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 0.95rem;
+}
+
+.feedback-success {
+  background: rgba(22, 101, 52, 0.1);
+  border: 1px solid rgba(22, 101, 52, 0.16);
+  color: #166534;
+}
+
+.feedback-error {
+  background: rgba(185, 28, 28, 0.08);
+  border: 1px solid rgba(185, 28, 28, 0.14);
+  color: #991b1b;
+}
+
+.feedback-info {
+  background: rgba(14, 116, 144, 0.08);
+  border: 1px solid rgba(14, 116, 144, 0.14);
+  color: #155e75;
+}
+
 .process-action {
   margin-top: 18px;
 }
@@ -736,6 +844,10 @@ a {
   }
 
   .result-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .field-grid {
     grid-template-columns: 1fr;
   }
 

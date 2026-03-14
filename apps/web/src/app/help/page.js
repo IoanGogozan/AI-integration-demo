@@ -64,6 +64,27 @@ export default function HelpPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
+            <h2>Quick start</h2>
+            <p className="panel-copy">
+              Use this path when you need the shortest reliable route through the demo.
+            </p>
+          </div>
+          <Link href="/results" className="ghost-link">
+            Start with results
+          </Link>
+        </div>
+
+        <div className="pill-row">
+          <span className="info-pill">1. Home</span>
+          <span className="info-pill">2. Results</span>
+          <span className="info-pill">3. Inbox case</span>
+          <span className="info-pill">4. Dashboard</span>
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
             <h2>Navigation map</h2>
             <p className="panel-copy">
               Each page has a distinct role so you can move between story, workflow, and metrics without losing context.
