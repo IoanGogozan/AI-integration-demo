@@ -2,6 +2,13 @@ import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
 import { runAiProcessing } from './lib/ai-processing.js';
+import {
+  attachSession,
+  authenticateDemoUser,
+  clearSessionCookie,
+  requireSession,
+  setSessionCookie
+} from './lib/auth.js';
 import { getDashboardStats } from './lib/dashboard-stats.js';
 import { findEmailWithRelations } from './lib/email-queries.js';
 import { saveUploadedFile } from './lib/file-storage.js';
@@ -19,8 +26,14 @@ export function createApp() {
     }
   });
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: process.env.WEB_ORIGIN || 'http://localhost:3000',
+      credentials: true
+    })
+  );
   app.use(express.json());
+  app.use(attachSession);
 
   app.get('/health', (_req, res) => {
     res.json({
@@ -48,7 +61,37 @@ export function createApp() {
     }
   });
 
-  app.get('/emails', async (_req, res) => {
+  app.post('/auth/login', (req, res) => {
+    const email = req.body?.email?.trim().toLowerCase();
+    const password = req.body?.password;
+    const user = authenticateDemoUser(email, password);
+
+    if (!user) {
+      res.status(401).json({
+        message: 'Invalid credentials'
+      });
+      return;
+    }
+
+    setSessionCookie(res, user);
+
+    res.status(201).json({
+      user
+    });
+  });
+
+  app.post('/auth/logout', (_req, res) => {
+    clearSessionCookie(res);
+    res.status(204).end();
+  });
+
+  app.get('/auth/session', requireSession, (req, res) => {
+    res.json({
+      user: req.sessionUser
+    });
+  });
+
+  app.get('/emails', requireSession, async (_req, res) => {
     const emails = await prisma.email.findMany({
       include: {
         attachments: true,
@@ -69,7 +112,7 @@ export function createApp() {
     });
   });
 
-  app.get('/emails/:id', async (req, res) => {
+  app.get('/emails/:id', requireSession, async (req, res) => {
     const email = await findEmailWithRelations(req.params.id);
 
     if (!email) {
@@ -87,7 +130,7 @@ export function createApp() {
     });
   });
 
-  app.get('/dashboard/stats', async (_req, res) => {
+  app.get('/dashboard/stats', requireSession, async (_req, res) => {
     try {
       const stats = await getDashboardStats();
       res.json(stats);
@@ -99,7 +142,7 @@ export function createApp() {
     }
   });
 
-  app.post('/emails/:id/attachments', upload.single('attachment'), async (req, res) => {
+  app.post('/emails/:id/attachments', requireSession, upload.single('attachment'), async (req, res) => {
     const email = await findEmailWithRelations(req.params.id);
 
     if (!email) {
@@ -158,7 +201,7 @@ export function createApp() {
     }
   });
 
-  app.post('/emails/:id/process', async (req, res) => {
+  app.post('/emails/:id/process', requireSession, async (req, res) => {
     const email = await findEmailWithRelations(req.params.id);
 
     if (!email) {
@@ -186,7 +229,7 @@ export function createApp() {
     }
   });
 
-  app.patch('/emails/:id/review', async (req, res) => {
+  app.patch('/emails/:id/review', requireSession, async (req, res) => {
     try {
       await updateAiReview(req.params.id, req.body);
       const updatedEmail = await findEmailWithRelations(req.params.id);
@@ -210,7 +253,7 @@ export function createApp() {
     }
   });
 
-  app.patch('/emails/:id/status', async (req, res) => {
+  app.patch('/emails/:id/status', requireSession, async (req, res) => {
     try {
       await setEmailStatus(req.params.id, req.body.status);
       const updatedEmail = await findEmailWithRelations(req.params.id);

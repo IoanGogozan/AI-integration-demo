@@ -1,9 +1,12 @@
 import { PrimaryNav } from './primary-nav';
+import { requireAppSession } from '../lib/auth';
 
-export function AppShell({ title, eyebrow, description, actions, children }) {
+export async function AppShell({ title, eyebrow, description, actions, children }) {
+  const session = await requireAppSession();
+
   return (
     <main className="page-shell">
-      <PrimaryNav />
+      <PrimaryNav session={session} />
 
       <header className="app-header">
         <div>

@@ -25,6 +25,7 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           summary,
           suggestedNextAction,
@@ -55,6 +56,7 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           status
         })

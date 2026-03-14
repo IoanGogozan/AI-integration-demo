@@ -28,6 +28,7 @@ Repository structure:
 Frontend pages:
 
 - `/`: home page with quick navigation and a featured case
+- `/login`: demo sign-in page
 - `/help`: usage guide and demo instructions
 - `/overview`: business framing for presentations
 - `/inbox`: operational case list
@@ -59,6 +60,14 @@ Frontend note:
 - `API_BASE_URL` controls which backend the Next.js app reads from.
 - `NEXT_PUBLIC_API_BASE_URL` controls which backend the browser upload form uses.
 - The default is `http://localhost:4000`.
+- `WEB_ORIGIN` should match the frontend origin when cookie-based auth is enabled.
+
+Authentication note:
+
+- The demo uses a backend session stored in an HttpOnly cookie.
+- Set `AUTH_SECRET` in `.env` so the backend and Next.js server can verify the session cookie.
+- Default demo credentials are `demo@norvix.ai` / `demo1234` unless you override `DEMO_AUTH_EMAIL` and `DEMO_AUTH_PASSWORD`.
+- Log in at `/login` before using the protected pages.
 
 AI processing note:
 

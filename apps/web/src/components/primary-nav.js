@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogoutButton } from './logout-button';
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -12,7 +13,7 @@ const navItems = [
   { href: '/help', label: 'Help' }
 ];
 
-export function PrimaryNav() {
+export function PrimaryNav({ session }) {
   const pathname = usePathname();
 
   return (
@@ -36,6 +37,8 @@ export function PrimaryNav() {
             </Link>
           );
         })}
+        <span className="nav-user">{session.name}</span>
+        <LogoutButton />
       </div>
     </nav>
   );

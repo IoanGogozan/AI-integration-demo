@@ -67,6 +67,10 @@ vi.mock('./lib/review-actions.js', () => ({
 
 describe('createApp', () => {
   beforeEach(() => {
+    process.env.AUTH_SECRET = 'test-secret';
+    process.env.DEMO_AUTH_EMAIL = 'demo@norvix.ai';
+    process.env.DEMO_AUTH_PASSWORD = 'demo1234';
+    process.env.DEMO_AUTH_NAME = 'Demo Operator';
     prismaMock.$queryRaw.mockReset();
     prismaMock.email.findMany.mockReset();
     findEmailWithRelations.mockReset();
@@ -103,10 +107,41 @@ describe('createApp', () => {
 
     const { createApp } = await import('./app.js');
     const app = createApp();
-    const response = await request(app).get('/dashboard/stats');
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    const response = await agent.get('/dashboard/stats');
 
     expect(response.status).toBe(200);
     expect(response.body.totals.cases).toBe(12);
+  });
+
+  it('rejects protected routes without a session', async () => {
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+
+    const response = await request(app).get('/emails');
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('Authentication required');
+  });
+
+  it('creates a session on login', async () => {
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+
+    const response = await request(app).post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.user.email).toBe('demo@norvix.ai');
+    expect(response.headers['set-cookie']).toBeTruthy();
   });
 
   it('processes an email and returns updated data', async () => {
@@ -117,7 +152,14 @@ describe('createApp', () => {
 
     const { createApp } = await import('./app.js');
     const app = createApp();
-    const response = await request(app).post('/emails/email-1/process');
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    const response = await agent.post('/emails/email-1/process');
 
     expect(response.status).toBe(201);
     expect(runAiProcessing).toHaveBeenCalledWith(emailRecord);
@@ -130,7 +172,14 @@ describe('createApp', () => {
 
     const { createApp } = await import('./app.js');
     const app = createApp();
-    const response = await request(app)
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    const response = await agent
       .patch('/emails/email-1/review')
       .send({
         summary: 'Reviewed summary'
@@ -147,7 +196,14 @@ describe('createApp', () => {
 
     const { createApp } = await import('./app.js');
     const app = createApp();
-    const response = await request(app)
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    const response = await agent
       .patch('/emails/email-1/status')
       .send({
         status: 'bad-status'

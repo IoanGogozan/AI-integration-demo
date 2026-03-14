@@ -23,7 +23,8 @@ export function AttachmentUploadForm({ emailId }) {
     try {
       const response = await fetch(`${apiBaseUrl}/emails/${emailId}/attachments`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
 
       if (!response.ok) {

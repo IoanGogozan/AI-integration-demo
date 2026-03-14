@@ -21,7 +21,8 @@ export function ProcessCaseButton({ emailId }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
