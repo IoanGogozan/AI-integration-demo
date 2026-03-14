@@ -1,4 +1,6 @@
 export function serializeEmail(email) {
+  const latestAiResult = email.aiResults?.[0];
+
   return {
     id: email.id,
     sender: email.sender,
@@ -17,19 +19,19 @@ export function serializeEmail(email) {
       createdAt: attachment.createdAt,
       updatedAt: attachment.updatedAt
     })),
-    latestAiResult: email.aiResults?.[0]
+    latestAiResult: latestAiResult
       ? {
-          id: email.aiResults[0].id,
-          category: email.aiResults[0].category,
-          priority: email.aiResults[0].priority,
-          summary: email.aiResults[0].summary,
-          suggestedRoute: email.aiResults[0].suggestedRoute,
-          suggestedNextAction: email.aiResults[0].suggestedNextAction,
-          suggestedReply: email.aiResults[0].suggestedReply,
-          confidence: Number(email.aiResults[0].confidence),
-          extractedJson: email.aiResults[0].extractedJson,
-          createdAt: email.aiResults[0].createdAt,
-          updatedAt: email.aiResults[0].updatedAt
+          id: latestAiResult.id,
+          category: latestAiResult.category,
+          priority: latestAiResult.priority,
+          summary: latestAiResult.summary,
+          suggestedRoute: latestAiResult.suggestedRoute,
+          suggestedNextAction: latestAiResult.suggestedNextAction,
+          suggestedReply: latestAiResult.suggestedReply,
+          confidence: Number(latestAiResult.confidence),
+          extractedJson: latestAiResult.extractedJson,
+          createdAt: latestAiResult.createdAt,
+          updatedAt: latestAiResult.updatedAt
         }
       : null
   };

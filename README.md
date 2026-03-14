@@ -34,14 +34,24 @@ Local setup baseline:
 2. Start PostgreSQL with `docker compose up -d`.
 3. Install workspace dependencies with `npm install`.
 4. Initialize the database with `npm run db:setup`.
-5. Run the API with `npm run dev:api`.
-6. Run the web app with `npm run dev:web`.
+5. Run both services with `npm run dev`.
+
+Optional:
+
+- Run only the API with `npm run dev:api`.
+- Run only the web app with `npm run dev:web`.
 
 Frontend note:
 
 - `API_BASE_URL` controls which backend the Next.js app reads from.
 - `NEXT_PUBLIC_API_BASE_URL` controls which backend the browser upload form uses.
 - The default is `http://localhost:4000`.
+
+AI processing note:
+
+- Set `OPENAI_API_KEY` to enable live OpenAI processing.
+- `OPENAI_MODEL` defaults to `gpt-5.4`.
+- If no API key is set, the app uses a deterministic fallback classifier so the demo still works locally.
 
 If port `5432` is already in use on your machine, start PostgreSQL with a different host port, for example:
 
@@ -58,3 +68,5 @@ Current backend endpoints:
 - `GET /health/db`
 - `GET /emails`
 - `GET /emails/:id`
+- `POST /emails/:id/attachments`
+- `POST /emails/:id/process`

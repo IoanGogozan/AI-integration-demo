@@ -345,7 +345,17 @@ a {
   cursor: pointer;
 }
 
+.action-button {
+  border: 0;
+  cursor: pointer;
+}
+
 .upload-button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.action-button:disabled {
   opacity: 0.7;
   cursor: progress;
 }
@@ -353,6 +363,20 @@ a {
 .upload-message {
   margin: 12px 0 0;
   color: var(--muted);
+}
+
+.process-action {
+  margin-top: 18px;
+}
+
+.json-preview {
+  margin: 12px 0 0;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(27, 29, 31, 0.06);
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 @media (max-width: 900px) {

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AttachmentUploadForm } from '../../../components/attachment-upload-form';
 import { AppShell } from '../../../components/app-shell';
+import { ProcessCaseButton } from '../../../components/process-case-button';
 import { StatusBadge } from '../../../components/status-badge';
 import { getEmail } from '../../../lib/api';
 import { formatDateTime, formatListCount } from '../../../lib/formatters';
@@ -107,6 +108,8 @@ export default async function EmailDetailPage({ params }) {
               <span className="panel-kicker">Phase 4 will populate this panel</span>
             </div>
 
+            <ProcessCaseButton emailId={email.id} />
+
             {email.latestAiResult ? (
               <div className="result-preview">
                 <div className="result-row">
@@ -121,10 +124,32 @@ export default async function EmailDetailPage({ params }) {
                   <span>Summary</span>
                   <p>{email.latestAiResult.summary}</p>
                 </div>
+                <div className="result-row">
+                  <span>Route</span>
+                  <strong>{email.latestAiResult.suggestedRoute}</strong>
+                </div>
+                <div className="result-row">
+                  <span>Confidence</span>
+                  <strong>{email.latestAiResult.confidence}</strong>
+                </div>
+                <div className="result-row result-block">
+                  <span>Next action</span>
+                  <p>{email.latestAiResult.suggestedNextAction}</p>
+                </div>
+                <div className="result-row result-block">
+                  <span>Reply draft</span>
+                  <p>{email.latestAiResult.suggestedReply}</p>
+                </div>
+                <div className="result-row result-block">
+                  <span>Extracted fields</span>
+                  <pre className="json-preview">
+                    {JSON.stringify(email.latestAiResult.extractedJson, null, 2)}
+                  </pre>
+                </div>
               </div>
             ) : (
               <p className="empty-copy">
-                No AI output exists yet. This case is ready for the processing endpoint in the next phase.
+                No AI output exists yet. Use the button above to process the case and store the structured result.
               </p>
             )}
           </section>

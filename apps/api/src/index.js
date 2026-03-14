@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
+import { runAiProcessing } from './lib/ai-processing.js';
 import { findEmailWithRelations } from './lib/email-queries.js';
 import { saveUploadedFile } from './lib/file-storage.js';
 import { prisma } from './lib/prisma.js';
@@ -139,6 +140,34 @@ app.post('/emails/:id/attachments', upload.single('attachment'), async (req, res
   } catch (error) {
     res.status(500).json({
       message: 'Attachment upload failed',
+      details: error.message
+    });
+  }
+});
+
+app.post('/emails/:id/process', async (req, res) => {
+  const email = await findEmailWithRelations(req.params.id);
+
+  if (!email) {
+    res.status(404).json({
+      message: 'Email not found'
+    });
+    return;
+  }
+
+  try {
+    await runAiProcessing(email);
+    const updatedEmail = await findEmailWithRelations(email.id);
+
+    res.status(201).json({
+      item: {
+        ...serializeEmail(updatedEmail),
+        jobs: updatedEmail.jobs
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'AI processing failed',
       details: error.message
     });
   }

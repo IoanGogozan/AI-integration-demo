@@ -2,5 +2,9 @@
   "name": "@ai-integration/prompts",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    "./intake-prompt": "./src/intake-prompt.js",
+    "./intake-schema": "./src/intake-schema.js"
+  }
 }
