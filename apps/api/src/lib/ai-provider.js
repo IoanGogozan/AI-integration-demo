@@ -9,7 +9,15 @@ const client = apiKey ? new OpenAI({ apiKey }) : null;
 
 export async function processEmailWithAi(email) {
   if (!client) {
-    return buildFallbackResult(email);
+    return {
+      result: buildFallbackResult(email),
+      meta: {
+        provider: 'fallback',
+        fallbackReason: 'missing_api_key',
+        invalidStructuredOutput: false,
+        rawOutput: null
+      }
+    };
   }
 
   const requestPayload = {
@@ -27,9 +35,36 @@ export async function processEmailWithAi(email) {
   }
 
   const response = await client.responses.create(requestPayload);
+  const rawOutput = typeof response.output_text === 'string' ? response.output_text : '';
 
-  const parsed = JSON.parse(response.output_text);
-  return validateIntakeResult(parsed);
+  try {
+    const parsed = JSON.parse(rawOutput);
+
+    return {
+      result: validateIntakeResult(parsed),
+      meta: {
+        provider: 'openai',
+        fallbackReason: null,
+        invalidStructuredOutput: false,
+        rawOutput
+      }
+    };
+  } catch (error) {
+    console.error('Invalid structured AI output. Falling back to deterministic classifier.', {
+      message: error.message,
+      rawOutput
+    });
+
+    return {
+      result: buildFallbackResult(email),
+      meta: {
+        provider: 'fallback',
+        fallbackReason: 'invalid_structured_output',
+        invalidStructuredOutput: true,
+        rawOutput
+      }
+    };
+  }
 }
 
 function buildFallbackResult(email) {
@@ -79,6 +114,7 @@ function buildFallbackResult(email) {
     category,
     priority,
     summary: buildSummary(email, category),
+    evidence_snippets: buildEvidenceSnippets(email),
     suggested_route: suggestedRoute,
     suggested_next_action: buildNextAction(category, priority),
     suggested_reply: buildReplyDraft(category),
@@ -94,6 +130,18 @@ function buildFallbackResult(email) {
       request_type: category
     }
   });
+}
+
+function buildEvidenceSnippets(email) {
+  const candidates = [email.subject, email.body, ...email.attachments.map((item) => item.extractedText || '')]
+    .flatMap((value) => value.split(/\r?\n|(?<=[.!?])\s+/))
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => value.replace(/\s+/g, ' '))
+    .filter((value) => value.length >= 18)
+    .slice(0, 3);
+
+  return candidates;
 }
 
 function buildSummary(email, category) {

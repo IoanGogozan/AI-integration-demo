@@ -22,6 +22,11 @@ export default async function HomePage() {
       description: 'Operational queue for reading emails, uploading files, and opening cases.'
     },
     {
+      title: 'Queues',
+      href: '/queues',
+      description: 'Team-based routing view for finance, support, legal, sales, and admin handoff.'
+    },
+    {
       title: 'Results',
       href: '/results',
       description: 'Outcome-first page for AI summaries, routes, extracted fields, and drafts.'
@@ -67,6 +72,10 @@ export default async function HomePage() {
             </article>
             <article className="showcase-item">
               <span className="showcase-index">03</span>
+              <p>Use Queues to show that routed work lands in a concrete team-owned operational backlog.</p>
+            </article>
+            <article className="showcase-item">
+              <span className="showcase-index">04</span>
               <p>Use Results and Dashboard to show concrete AI output and aggregated operations value.</p>
             </article>
           </div>
@@ -129,8 +138,8 @@ export default async function HomePage() {
           <strong>{stats.totals.needsReview}</strong>
         </article>
         <article className="summary-card">
-          <span>Help page</span>
-          <strong>Ready</strong>
+          <span>Routed teams</span>
+          <strong>{stats.byAssignedTeam.length}</strong>
         </article>
       </section>
 
@@ -156,6 +165,9 @@ export default async function HomePage() {
                     {item}
                   </span>
                 ))}
+                {featuredCase.assignedTeam ? (
+                  <span className="info-pill">Assigned to {formatLabel(featuredCase.assignedTeam)}</span>
+                ) : null}
                 {featuredCase.latestAiResult ? (
                   <>
                     <span className="info-pill">{formatLabel(featuredCase.latestAiResult.category)}</span>

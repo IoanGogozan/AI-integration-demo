@@ -41,12 +41,14 @@ export function buildIntakePrompt(email) {
             '',
             'Output rules:',
             '- summary: maximum 2 sentences, ideally under 35 words',
+            '- evidence_snippets: include 1 to 3 short direct snippets from the email or attachment text',
+            '- evidence_snippets: each snippet should stay short, concrete, and support the summary or route',
             '- suggested_next_action: exactly 1 sentence, ideally under 28 words',
             '- suggested_reply: maximum 2 short sentences, professional and clear',
             '- extracted_fields.request_type: short phrase, not a full sentence',
             '- keep wording compact and operational, not verbose',
             '',
-            'Return a concise internal summary, the best next action, an editable reply draft, and extracted fields.'
+            'Return a concise internal summary, evidence snippets, the best next action, an editable reply draft, and extracted fields.'
           ].join('\n')
         }
       ]

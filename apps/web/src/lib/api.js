@@ -39,9 +39,21 @@ async function request(path) {
   return response.json();
 }
 
-export async function getEmails() {
+function withTeamFilter(path, team) {
+  if (!team) {
+    return path;
+  }
+
+  const params = new URLSearchParams({
+    team
+  });
+
+  return `${path}?${params.toString()}`;
+}
+
+export async function getEmails(team) {
   try {
-    const data = await request('/emails');
+    const data = await request(withTeamFilter('/emails', team));
     return data.items || [];
   } catch (error) {
     if (isRedirectError(error)) {
@@ -67,9 +79,9 @@ export async function getEmail(id) {
   }
 }
 
-export async function getDashboardStats() {
+export async function getDashboardStats(team) {
   try {
-    return await request('/dashboard/stats');
+    return await request(withTeamFilter('/dashboard/stats', team));
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;
@@ -84,6 +96,7 @@ export async function getDashboardStats() {
         needsReview: 0
       },
       byStatus: [],
+      byAssignedTeam: [],
       byCategory: [],
       byPriority: [],
       reviewItems: []

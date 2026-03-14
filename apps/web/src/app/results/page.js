@@ -132,6 +132,21 @@ export default async function ResultsPage() {
                 </div>
 
                 <div className="result-section">
+                  <span className="panel-kicker">Evidence</span>
+                  {email.latestAiResult.evidenceSnippets?.length ? (
+                    <div className="snippet-list">
+                      {email.latestAiResult.evidenceSnippets.map((snippet) => (
+                        <blockquote className="evidence-snippet" key={snippet}>
+                          "{snippet}"
+                        </blockquote>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>No evidence snippets available.</p>
+                  )}
+                </div>
+
+                <div className="result-section">
                   <span className="panel-kicker">Next action</span>
                   <p>{email.latestAiResult.suggestedNextAction}</p>
                 </div>

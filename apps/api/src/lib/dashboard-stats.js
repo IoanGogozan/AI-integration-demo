@@ -1,8 +1,15 @@
 import { prisma } from './prisma.js';
 
-export async function getDashboardStats() {
+export async function getDashboardStats(filters = {}) {
+  const emailWhere = filters.team
+    ? {
+        assignedTeam: filters.team
+      }
+    : undefined;
+
   const [emails, aiResults, reviewItems] = await Promise.all([
     prisma.email.findMany({
+      where: emailWhere,
       include: {
         attachments: true
       },
@@ -11,12 +18,20 @@ export async function getDashboardStats() {
       }
     }),
     prisma.aiResult.findMany({
+      where: filters.team
+        ? {
+            email: {
+              assignedTeam: filters.team
+            }
+          }
+        : undefined,
       orderBy: {
         createdAt: 'desc'
       }
     }),
     prisma.email.findMany({
       where: {
+        ...emailWhere,
         status: 'needs_review'
       },
       orderBy: {
@@ -36,6 +51,7 @@ export async function getDashboardStats() {
   return {
     totals,
     byStatus: countBy(emails, (item) => item.status),
+    byAssignedTeam: countBy(emails.filter((item) => item.assignedTeam), (item) => item.assignedTeam),
     byCategory: countBy(aiResults, (item) => item.category),
     byPriority: countBy(aiResults, (item) => item.priority),
     reviewItems: reviewItems.map((item) => ({
@@ -43,7 +59,8 @@ export async function getDashboardStats() {
       subject: item.subject,
       sender: item.sender,
       receivedAt: item.receivedAt,
-      status: item.status
+      status: item.status,
+      assignedTeam: item.assignedTeam
     }))
   };
 }

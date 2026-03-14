@@ -8,6 +8,8 @@ const allowedStatuses = new Set([
   'completed'
 ]);
 
+const allowedTeams = new Set(['admin', 'finance', 'legal', 'sales', 'support']);
+
 export async function updateAiReview(emailId, payload) {
   const email = await prisma.email.findUnique({
     where: {
@@ -94,6 +96,39 @@ export async function setEmailStatus(emailId, status, action = 'status_updated')
       action,
       payload: {
         status
+      }
+    }
+  });
+
+  return email;
+}
+
+export async function setEmailAssignment(emailId, assignedTeam, assignmentSource = 'manual') {
+  if (!allowedTeams.has(assignedTeam)) {
+    throw new Error('Invalid assigned team');
+  }
+
+  const email = await prisma.email.update({
+    where: {
+      id: emailId
+    },
+    data: {
+      assignedTeam,
+      assignedQueue: assignedTeam,
+      assignedAt: new Date(),
+      assignmentSource
+    }
+  });
+
+  await prisma.auditEvent.create({
+    data: {
+      entityType: 'email',
+      entityId: emailId,
+      action: assignmentSource === 'ai' ? 'assignment_applied_by_ai' : 'assignment_updated',
+      payload: {
+        assignedTeam,
+        assignedQueue: assignedTeam,
+        assignmentSource
       }
     }
   });

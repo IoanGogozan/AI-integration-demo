@@ -19,3 +19,7 @@ export function formatLabel(value) {
 export function formatListCount(count, singular, plural) {
   return `${count} ${count === 1 ? singular : plural}`;
 }
+
+export function formatTeamLabel(value) {
+  return value ? formatLabel(value) : 'Unassigned';
+}

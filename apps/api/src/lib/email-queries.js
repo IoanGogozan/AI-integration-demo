@@ -17,6 +17,12 @@ export async function findEmailWithRelations(id) {
         orderBy: {
           createdAt: 'desc'
         }
+      },
+      auditEvents: {
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: 8
       }
     }
   });

@@ -356,11 +356,27 @@ a {
 }
 
 .showcase-case-card,
-.result-gallery-card {
+.result-gallery-card,
+.queue-card {
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.46);
+}
+
+.queue-list {
+  margin-top: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.queue-card-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .quick-link-card {
@@ -427,6 +443,22 @@ a {
   color: var(--muted);
 }
 
+.snippet-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.evidence-snippet {
+  margin: 0;
+  padding: 14px 16px;
+  border-left: 3px solid rgba(15, 118, 110, 0.5);
+  border-radius: 0 14px 14px 0;
+  background: rgba(15, 118, 110, 0.06);
+  color: var(--text);
+  line-height: 1.6;
+}
+
 .confidence-stack {
   display: grid;
   gap: 8px;
@@ -475,10 +507,51 @@ a {
 
 .metric-list,
 .review-list,
-.help-list {
+.help-list,
+.filter-row {
   margin-top: 20px;
   display: grid;
   gap: 14px;
+}
+
+.audit-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.audit-item {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.audit-item .row-title {
+  margin-bottom: 4px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--muted);
+}
+
+.filter-chip-active {
+  background: rgba(15, 118, 110, 0.08);
+  border-color: rgba(15, 118, 110, 0.16);
+  color: var(--accent);
 }
 
 .metric-row,
@@ -518,7 +591,7 @@ a {
 .inbox-head,
 .inbox-row {
   display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(120px, 0.8fr) auto;
+  grid-template-columns: minmax(0, 2fr) minmax(120px, 0.8fr) minmax(120px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.7fr) auto;
   gap: 16px;
   align-items: center;
 }
@@ -827,6 +900,10 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.assignment-panel {
+  margin-top: 18px;
 }
 
 .json-preview {

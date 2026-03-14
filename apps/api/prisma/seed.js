@@ -31,11 +31,17 @@ const emails = [
       'Hi, invoice 2026-1043 includes the wrong billing address. Please review and send an updated copy before March 20.',
     receivedAt: new Date('2026-03-11T10:30:00Z'),
     status: 'needs_review',
+    assignedTeam: 'finance',
     aiResult: {
       category: 'invoice_billing',
       priority: 'medium',
       summary:
         'The customer requests a corrected invoice because the billing address is wrong and asks for an updated copy before March 20.',
+      evidenceSnippets: [
+        'invoice 2026-1043 includes the wrong billing address.',
+        'send an updated copy before March 20.',
+        'Requested action: correct billing address and resend PDF.'
+      ],
       suggestedRoute: 'finance',
       suggestedNextAction: 'Review the invoice record, correct the billing address, and prepare a replacement PDF.',
       suggestedReply:
@@ -68,11 +74,17 @@ const emails = [
       'Our Oslo team cannot access the internal portal after the latest update. We need this fixed today because shipments are blocked.',
     receivedAt: new Date('2026-03-12T06:45:00Z'),
     status: 'needs_review',
+    assignedTeam: 'support',
     aiResult: {
       category: 'support_request',
       priority: 'high',
       summary:
         'Portal access failure is blocking shipment operations in Oslo and needs immediate support ownership today.',
+      evidenceSnippets: [
+        'Our Oslo team cannot access the internal portal after the latest update.',
+        'shipments are blocked.',
+        'We need this fixed today.'
+      ],
       suggestedRoute: 'support',
       suggestedNextAction: 'Assign the outage to support immediately, verify the failed update, and confirm restoration for the Oslo team.',
       suggestedReply:
@@ -98,11 +110,17 @@ const emails = [
       'Hello, please review the attached supplier renewal agreement before we send it to the vendor. We need comments by Friday.',
     receivedAt: new Date('2026-03-12T09:20:00Z'),
     status: 'approved',
+    assignedTeam: 'legal',
     aiResult: {
       category: 'contract_agreement',
       priority: 'medium',
       summary:
         'The sender requests a legal review of a supplier renewal agreement and needs comments before the end of the week.',
+      evidenceSnippets: [
+        'please review the attached supplier renewal agreement',
+        'We need comments by Friday.',
+        'Review request: legal comments and approval before signature.'
+      ],
       suggestedRoute: 'legal',
       suggestedNextAction: 'Assign the agreement to legal review and capture comments for procurement before vendor submission.',
       suggestedReply:
@@ -135,11 +153,17 @@ const emails = [
       'We are comparing vendors for inbox automation. Please send pricing, implementation timeline, and whether you can integrate with our current CRM.',
     receivedAt: new Date('2026-03-12T13:00:00Z'),
     status: 'approved',
+    assignedTeam: 'sales',
     aiResult: {
       category: 'sales_inquiry',
       priority: 'medium',
       summary:
         'The prospect wants pricing, implementation timing, and confirmation of CRM integration capabilities for inbox automation.',
+      evidenceSnippets: [
+        'Please send pricing, implementation timeline',
+        'whether you can integrate with our current CRM.',
+        'Vestbygg AS wants CRM integration, email classification, finance routing'
+      ],
       suggestedRoute: 'sales',
       suggestedNextAction: 'Prepare a pilot proposal with pricing range, timeline estimate, and CRM integration scope.',
       suggestedReply:
@@ -172,11 +196,17 @@ const emails = [
       'We were promised a credit note for the overcharge on the February invoice. Please confirm the amount and send the corrected document.',
     receivedAt: new Date('2026-03-13T07:15:00Z'),
     status: 'needs_review',
+    assignedTeam: 'finance',
     aiResult: {
       category: 'invoice_billing',
       priority: 'medium',
       summary:
         'Customer requests confirmation of a promised credit note and a corrected document for a February overcharge.',
+      evidenceSnippets: [
+        'Missing credit note for February invoice',
+        'Please confirm the amount and send the corrected document.',
+        'Customer requests updated invoice and credit note.'
+      ],
       suggestedRoute: 'finance',
       suggestedNextAction: 'Confirm the overcharge amount against invoice BM-2048 and issue the credit note with the corrected billing document.',
       suggestedReply:
@@ -209,11 +239,17 @@ const emails = [
       'Please prioritize this. Our field technician needs remote portal access restored before 2026-03-18 or project work will stop.',
     receivedAt: new Date('2026-03-13T08:50:00Z'),
     status: 'needs_review',
+    assignedTeam: 'support',
     aiResult: {
       category: 'support_request',
       priority: 'high',
       summary:
         'A field technician access issue threatens project work, and the sender states the problem must be resolved before 2026-03-18.',
+      evidenceSnippets: [
+        'field technician needs remote portal access restored before 2026-03-18',
+        'project work will stop.',
+        'Please prioritize this.'
+      ],
       suggestedRoute: 'support',
       suggestedNextAction: 'Create a high-priority support task and verify access restoration before the stated deadline.',
       suggestedReply:
@@ -239,11 +275,17 @@ const emails = [
       'Can you confirm where completed onboarding forms should be routed internally? We want to standardize the process for new clients.',
     receivedAt: new Date('2026-03-13T10:05:00Z'),
     status: 'approved',
+    assignedTeam: 'admin',
     aiResult: {
       category: 'general_admin',
       priority: 'low',
       summary:
         'Sender wants a standard internal routing rule for completed onboarding forms used with new clients.',
+      evidenceSnippets: [
+        'where completed onboarding forms should be routed internally?',
+        'We want to standardize the process for new clients.',
+        'onboarding forms arrive by email and are forwarded manually.'
+      ],
       suggestedRoute: 'admin',
       suggestedNextAction: 'Define the default onboarding route across admin, finance, and support and publish it as the new internal rule.',
       suggestedReply:
@@ -276,11 +318,17 @@ const emails = [
       'We sent our agreement package last week and still have no confirmation. This delay is affecting our procurement timeline.',
     receivedAt: new Date('2026-03-13T12:40:00Z'),
     status: 'needs_review',
+    assignedTeam: 'admin',
     aiResult: {
       category: 'complaint',
       priority: 'high',
       summary:
         'Customer complains about missing confirmation on an agreement package and says the delay is affecting procurement timing.',
+      evidenceSnippets: [
+        'we still have no confirmation.',
+        'This delay is affecting our procurement timeline.',
+        'Customer requests confirmation, owner assignment, and expected review timeline.'
+      ],
       suggestedRoute: 'admin',
       suggestedNextAction: 'Acknowledge the delay, confirm receipt ownership, and provide a concrete review timeline for the agreement package.',
       suggestedReply:
@@ -364,6 +412,10 @@ async function main() {
         body: item.body,
         receivedAt: item.receivedAt,
         status: item.status,
+        assignedTeam: item.assignedTeam,
+        assignedQueue: item.assignedTeam || null,
+        assignedAt: item.assignedTeam ? new Date(item.receivedAt.getTime() + 9 * 60 * 1000) : null,
+        assignmentSource: item.assignedTeam ? 'ai' : null,
         attachments: {
           create: item.attachments
         }
@@ -377,6 +429,7 @@ async function main() {
           category: item.aiResult.category,
           priority: item.aiResult.priority,
           summary: item.aiResult.summary,
+          evidenceSnippets: item.aiResult.evidenceSnippets || [],
           suggestedRoute: item.aiResult.suggestedRoute,
           suggestedNextAction: item.aiResult.suggestedNextAction,
           suggestedReply: item.aiResult.suggestedReply,
@@ -401,7 +454,8 @@ async function main() {
           action: 'seeded_ai_result',
           payload: {
             category: item.aiResult.category,
-            priority: item.aiResult.priority
+            priority: item.aiResult.priority,
+            assignedTeam: item.assignedTeam || item.aiResult.suggestedRoute
           }
         }
       });

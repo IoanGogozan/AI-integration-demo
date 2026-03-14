@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { AppShell } from '../../components/app-shell';
 import { StatusBadge } from '../../components/status-badge';
 import { getDashboardStats } from '../../lib/api';
-import { formatDateTime, formatListCount } from '../../lib/formatters';
+import { formatDateTime, formatListCount, formatTeamLabel } from '../../lib/formatters';
 
 export const dynamic = 'force-dynamic';
+
+const teamFilters = ['all', 'admin', 'finance', 'legal', 'sales', 'support'];
 
 function getStatusTone(status) {
   if (status === 'needs_review') {
@@ -22,8 +24,11 @@ function getStatusTone(status) {
   return 'neutral';
 }
 
-export default async function DashboardPage() {
-  const stats = await getDashboardStats();
+export default async function DashboardPage({ searchParams }) {
+  const params = await searchParams;
+  const selectedTeam = params.team;
+  const activeTeam = selectedTeam && selectedTeam !== 'all' ? selectedTeam : '';
+  const stats = await getDashboardStats(activeTeam);
 
   return (
     <AppShell
@@ -53,6 +58,19 @@ export default async function DashboardPage() {
           <span>Attachments</span>
           <strong>{stats.totals.attachments}</strong>
         </article>
+      </section>
+
+      <section className="filter-row">
+        {teamFilters.map((team) => {
+          const href = team === 'all' ? '/dashboard' : `/dashboard?team=${team}`;
+          const isActive = (selectedTeam || 'all') === team;
+
+          return (
+            <Link className={isActive ? 'filter-chip filter-chip-active' : 'filter-chip'} href={href} key={team}>
+              {team === 'all' ? 'All teams' : formatTeamLabel(team)}
+            </Link>
+          );
+        })}
       </section>
 
       <section className="dashboard-grid">
@@ -96,6 +114,27 @@ export default async function DashboardPage() {
 
         <article className="panel">
           <div className="panel-header">
+            <h2>Team routing</h2>
+            <span className="panel-kicker">
+              {formatListCount(stats.byAssignedTeam.length, 'team', 'teams')}
+            </span>
+          </div>
+          {stats.byAssignedTeam.length === 0 ? (
+            <p className="empty-copy">No routed cases yet. Process a case to apply team assignment.</p>
+          ) : (
+            <div className="metric-list">
+              {stats.byAssignedTeam.map((item) => (
+                <div className="metric-row" key={item.key}>
+                  <span>{formatTeamLabel(item.key)}</span>
+                  <strong>{item.count}</strong>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
+
+        <article className="panel">
+          <div className="panel-header">
             <h2>Priority mix</h2>
             <span className="panel-kicker">
               {formatListCount(stats.byPriority.length, 'priority', 'priorities')}
@@ -130,7 +169,9 @@ export default async function DashboardPage() {
                 <article className="review-list-item" key={item.id}>
                   <div>
                     <p className="row-title">{item.subject}</p>
-                    <p className="row-meta">{item.sender} | {formatDateTime(item.receivedAt)}</p>
+                    <p className="row-meta">
+                      {item.sender} | {formatDateTime(item.receivedAt)} | {formatTeamLabel(item.assignedTeam)}
+                    </p>
                   </div>
                   <div className="review-item-actions">
                     <StatusBadge value={item.status} tone={getStatusTone(item.status)} />

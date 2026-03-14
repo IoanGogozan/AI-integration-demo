@@ -33,6 +33,7 @@ Frontend pages:
 - `/help`: usage guide and demo instructions
 - `/overview`: business framing for presentations
 - `/inbox`: operational case list
+- `/queues`: team-based operational queues for routed cases
 - `/results`: processed AI outputs
 - `/dashboard`: aggregate workflow metrics
 
@@ -66,9 +67,10 @@ Frontend note:
 Authentication note:
 
 - The demo uses a backend session stored in an HttpOnly cookie.
+- Shared auth/token logic now lives in `packages/shared-auth` to reduce drift between API and web.
 - Set `AUTH_SECRET` in `.env` so the backend and Next.js server can verify the session cookie.
-- `ENFORCE_API_AUTH=false` is the practical default for local demo mode, because the web app already protects pages and actions.
-- Set `ENFORCE_API_AUTH=true` only if you explicitly want backend route enforcement as well.
+- `ENFORCE_API_AUTH=true` is the recommended demo setting so role-based access is enforced in both the UI and API.
+- `ENFORCE_API_AUTH=false` is still acceptable for local development if you only want frontend-gated flows.
 - Default demo roles are:
 - `demo@norvix.ai` / `demo1234` as `operator`
 - `reviewer@norvix.ai` / `review1234` as `reviewer`
@@ -84,6 +86,20 @@ AI processing note:
 - Set `OPENAI_API_KEY` to enable live OpenAI processing.
 - `OPENAI_MODEL` defaults to `gpt-5-mini`.
 - If no API key is set, the app uses a deterministic fallback classifier so the demo still works locally.
+- If OpenAI returns invalid structured output, the app now records an audit event and falls back to the deterministic classifier.
+
+Workflow demo note:
+
+- AI processing now applies a real team assignment (`assignedTeam`, `assignedAt`, `assignmentSource`).
+- Processed cases include evidence snippets that explain the summary and route decision.
+- Approved and completed cases cannot be reprocessed until they are moved back to `needs_review`.
+- The case detail page includes a workflow record and simulated business actions such as internal task creation and queue handoff.
+- The `Queues` page is the strongest view for demonstrating downstream routing and team ownership.
+
+Attachment support note:
+
+- Current extraction is designed for text-based attachments, simple PDFs, and structured intake documents.
+- Do not position the current demo as OCR-heavy, image-first, or full Office document automation yet.
 
 Seed dataset note:
 
@@ -111,8 +127,10 @@ Current backend endpoints:
 - `GET /dashboard/stats`
 - `POST /emails/:id/attachments`
 - `POST /emails/:id/process`
+- `POST /emails/:id/actions`
 - `PATCH /emails/:id/review`
 - `PATCH /emails/:id/status`
+- `PATCH /emails/:id/assignment`
 
 Recommended demo flow:
 
@@ -121,6 +139,8 @@ Recommended demo flow:
 3. Review the email and attachment text.
 4. Upload an extra file if needed.
 5. Process the case with AI.
-6. Edit the result in manual review.
-7. Approve or complete the case.
-8. Open the results page or dashboard to show business output and operational visibility.
+6. Show the routing decision, evidence snippets, and workflow record.
+7. Edit the result in manual review.
+8. Record a business action or open the `Queues` page to show team handoff.
+9. Approve or complete the case.
+10. Open the results page or dashboard to show business output and operational visibility.

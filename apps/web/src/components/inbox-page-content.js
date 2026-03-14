@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AppShell } from './app-shell';
 import { StatusBadge } from './status-badge';
 import { getEmails } from '../lib/api';
-import { formatDateTime, formatListCount } from '../lib/formatters';
+import { formatDateTime, formatListCount, formatTeamLabel } from '../lib/formatters';
 
 function getStatusTone(status) {
   if (status === 'needs_review') {
@@ -20,8 +20,11 @@ function getStatusTone(status) {
   return 'neutral';
 }
 
-export async function InboxPageContent() {
-  const emails = await getEmails();
+const teamFilters = ['all', 'admin', 'finance', 'legal', 'sales', 'support'];
+
+export async function InboxPageContent({ selectedTeam }) {
+  const activeTeam = selectedTeam && selectedTeam !== 'all' ? selectedTeam : '';
+  const emails = await getEmails(activeTeam);
 
   return (
     <AppShell
@@ -66,6 +69,23 @@ export async function InboxPageContent() {
           <span className="panel-kicker">{formatListCount(emails.length, 'case', 'cases')}</span>
         </div>
 
+        <div className="filter-row">
+          {teamFilters.map((team) => {
+            const href = team === 'all' ? '/inbox' : `/inbox?team=${team}`;
+            const isActive = (selectedTeam || 'all') === team;
+
+            return (
+              <Link
+                className={isActive ? 'filter-chip filter-chip-active' : 'filter-chip'}
+                href={href}
+                key={team}
+              >
+                {team === 'all' ? 'All teams' : formatTeamLabel(team)}
+              </Link>
+            );
+          })}
+        </div>
+
         {emails.length === 0 ? (
           <p className="empty-copy">
             No cases available. Check that the API is running and that `npm run db:setup` has completed.
@@ -75,8 +95,9 @@ export async function InboxPageContent() {
             <div className="inbox-head">
               <span>Case</span>
               <span>Status</span>
+              <span>Assigned</span>
               <span>Received</span>
-              <span>Attachments</span>
+              <span>Files</span>
               <span>Open</span>
             </div>
 
@@ -89,6 +110,7 @@ export async function InboxPageContent() {
                 <div>
                   <StatusBadge value={email.status} tone={getStatusTone(email.status)} />
                 </div>
+                <div className="row-meta">{formatTeamLabel(email.assignedTeam)}</div>
                 <div className="row-meta">{formatDateTime(email.receivedAt)}</div>
                 <div className="row-meta">
                   {formatListCount(email.attachments.length, 'file', 'files')}

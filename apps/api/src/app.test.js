@@ -8,6 +8,10 @@ const emailRecord = {
   body: 'Please correct invoice INV-42.',
   receivedAt: new Date('2026-03-14T09:00:00Z'),
   status: 'needs_review',
+  assignedTeam: 'finance',
+  assignedQueue: 'finance',
+  assignedAt: new Date('2026-03-14T09:05:00Z'),
+  assignmentSource: 'ai',
   createdAt: new Date('2026-03-14T09:00:00Z'),
   updatedAt: new Date('2026-03-14T09:00:00Z'),
   attachments: [],
@@ -17,6 +21,7 @@ const emailRecord = {
       category: 'invoice_billing',
       priority: 'medium',
       summary: 'Original summary',
+      evidenceSnippets: ['invoice INV-42 needs correction'],
       suggestedRoute: 'finance',
       suggestedNextAction: 'Original next action',
       suggestedReply: 'Original reply',
@@ -28,11 +33,15 @@ const emailRecord = {
       updatedAt: new Date('2026-03-14T09:00:00Z')
     }
   ],
-  jobs: []
+  jobs: [],
+  auditEvents: []
 };
 
 const prismaMock = {
   $queryRaw: vi.fn(),
+  auditEvent: {
+    create: vi.fn()
+  },
   email: {
     findMany: vi.fn()
   }
@@ -43,6 +52,7 @@ const getDashboardStats = vi.fn();
 const runAiProcessing = vi.fn();
 const updateAiReview = vi.fn();
 const setEmailStatus = vi.fn();
+const setEmailAssignment = vi.fn();
 
 vi.mock('./lib/prisma.js', () => ({
   prisma: prismaMock
@@ -62,6 +72,7 @@ vi.mock('./lib/ai-processing.js', () => ({
 
 vi.mock('./lib/review-actions.js', () => ({
   updateAiReview,
+  setEmailAssignment,
   setEmailStatus
 }));
 
@@ -80,11 +91,13 @@ describe('createApp', () => {
     process.env.DEMO_VIEWER_PASSWORD = 'view1234';
     process.env.DEMO_VIEWER_NAME = 'Demo Viewer';
     prismaMock.$queryRaw.mockReset();
+    prismaMock.auditEvent.create.mockReset();
     prismaMock.email.findMany.mockReset();
     findEmailWithRelations.mockReset();
     getDashboardStats.mockReset();
     runAiProcessing.mockReset();
     updateAiReview.mockReset();
+    setEmailAssignment.mockReset();
     setEmailStatus.mockReset();
   });
 
@@ -204,6 +217,28 @@ describe('createApp', () => {
     expect(response.body.item.id).toBe('email-1');
   });
 
+  it('blocks processing for approved cases', async () => {
+    findEmailWithRelations.mockResolvedValue({
+      ...emailRecord,
+      status: 'approved'
+    });
+
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    const response = await agent.post('/emails/email-1/process');
+
+    expect(response.status).toBe(409);
+    expect(response.body.message).toBe('AI processing is only available for new or needs_review cases');
+    expect(runAiProcessing).not.toHaveBeenCalled();
+  });
+
   it('updates review fields', async () => {
     updateAiReview.mockResolvedValue({});
     findEmailWithRelations.mockResolvedValue(emailRecord);
@@ -249,5 +284,52 @@ describe('createApp', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe('Status update failed');
+  });
+
+  it('updates assignment for reviewer role', async () => {
+    setEmailAssignment.mockResolvedValue({});
+    findEmailWithRelations.mockResolvedValue(emailRecord);
+
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'reviewer@norvix.ai',
+      password: 'review1234'
+    });
+
+    const response = await agent
+      .patch('/emails/email-1/assignment')
+      .send({
+        assignedTeam: 'legal'
+      });
+
+    expect(response.status).toBe(200);
+    expect(setEmailAssignment).toHaveBeenCalledWith('email-1', 'legal', 'manual');
+  });
+
+  it('records a workflow business action', async () => {
+    prismaMock.auditEvent.create.mockResolvedValue({});
+    findEmailWithRelations.mockResolvedValue(emailRecord);
+
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'demo@norvix.ai',
+      password: 'demo1234'
+    });
+
+    const response = await agent
+      .post('/emails/email-1/actions')
+      .send({
+        actionType: 'create_internal_task'
+      });
+
+    expect(response.status).toBe(201);
+    expect(prismaMock.auditEvent.create).toHaveBeenCalled();
+    expect(response.body.item.id).toBe('email-1');
   });
 });

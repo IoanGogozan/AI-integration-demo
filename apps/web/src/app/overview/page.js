@@ -9,7 +9,8 @@ const demoPoints = [
   'Turn incoming emails and attachments into structured workflow steps.',
   'Keep humans in control with manual review before final action.',
   'Show concrete business outputs: category, priority, route, summary, and draft reply.',
-  'Connect the AI layer to a backend workflow instead of a standalone chatbot.'
+  'Connect the AI layer to a backend workflow instead of a standalone chatbot.',
+  'Show routed operational queues by team so stakeholders can see actual downstream handoff.'
 ];
 
 export default async function OverviewPage() {

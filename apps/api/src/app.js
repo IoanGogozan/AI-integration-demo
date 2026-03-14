@@ -15,9 +15,11 @@ import { getDashboardStats } from './lib/dashboard-stats.js';
 import { findEmailWithRelations } from './lib/email-queries.js';
 import { saveUploadedFile } from './lib/file-storage.js';
 import { prisma } from './lib/prisma.js';
-import { setEmailStatus, updateAiReview } from './lib/review-actions.js';
+import { setEmailAssignment, setEmailStatus, updateAiReview } from './lib/review-actions.js';
 import { serializeEmail } from './lib/serializers.js';
 import { extractTextFromFile } from './lib/text-extraction.js';
+
+const reprocessableStatuses = new Set(['new', 'needs_review']);
 
 export function createApp() {
   const app = express();
@@ -100,8 +102,15 @@ export function createApp() {
     });
   });
 
-  app.get('/emails', requireSession, async (_req, res) => {
+  app.get('/emails', requireSession, async (req, res) => {
+    const where = req.query.team
+      ? {
+          assignedTeam: req.query.team
+        }
+      : undefined;
+
     const emails = await prisma.email.findMany({
+      where,
       include: {
         attachments: true,
         aiResults: {
@@ -139,9 +148,11 @@ export function createApp() {
     });
   });
 
-  app.get('/dashboard/stats', requireSession, async (_req, res) => {
+  app.get('/dashboard/stats', requireSession, async (req, res) => {
     try {
-      const stats = await getDashboardStats();
+      const stats = await getDashboardStats({
+        team: req.query.team
+      });
       res.json(stats);
     } catch (error) {
       res.status(500).json({
@@ -225,6 +236,14 @@ export function createApp() {
       return;
     }
 
+    if (!reprocessableStatuses.has(email.status)) {
+      res.status(409).json({
+        message: 'AI processing is only available for new or needs_review cases',
+        details: `Current status: ${email.status}`
+      });
+      return;
+    }
+
     try {
       await runAiProcessing(email);
       const updatedEmail = await findEmailWithRelations(email.id);
@@ -286,6 +305,78 @@ export function createApp() {
         details: error.message
       });
     }
+  });
+
+  app.patch('/emails/:id/assignment', requireRole(['reviewer', 'admin']), async (req, res) => {
+    try {
+      await setEmailAssignment(req.params.id, req.body.assignedTeam, 'manual');
+      const updatedEmail = await findEmailWithRelations(req.params.id);
+
+      res.json({
+        item: {
+          ...serializeEmail(updatedEmail),
+          jobs: updatedEmail.jobs
+        }
+      });
+    } catch (error) {
+      const statusCode = error.message === 'Invalid assigned team' ? 400 : 404;
+
+      res.status(statusCode).json({
+        message: 'Assignment update failed',
+        details: error.message
+      });
+    }
+  });
+
+  app.post('/emails/:id/actions', requireRole(['operator', 'reviewer', 'admin']), async (req, res) => {
+    const email = await findEmailWithRelations(req.params.id);
+
+    if (!email) {
+      res.status(404).json({
+        message: 'Email not found'
+      });
+      return;
+    }
+
+    const actionType = req.body?.actionType;
+
+    if (!['create_internal_task', 'send_to_queue'].includes(actionType)) {
+      res.status(400).json({
+        message: 'Invalid action type'
+      });
+      return;
+    }
+
+    const payload =
+      actionType === 'create_internal_task'
+        ? {
+            createdByRole: req.sessionUser.role,
+            summary: req.body?.summary || `Internal task created for ${email.subject}`,
+            assignedTeam: email.assignedTeam
+          }
+        : {
+            createdByRole: req.sessionUser.role,
+            targetQueue: req.body?.targetQueue || email.assignedQueue || email.assignedTeam || 'admin',
+            assignedTeam: email.assignedTeam
+          };
+
+    await prisma.auditEvent.create({
+      data: {
+        entityType: 'email',
+        entityId: email.id,
+        action: actionType,
+        payload
+      }
+    });
+
+    const updatedEmail = await findEmailWithRelations(email.id);
+
+    res.status(201).json({
+      item: {
+        ...serializeEmail(updatedEmail),
+        jobs: updatedEmail.jobs
+      }
+    });
   });
 
   return app;

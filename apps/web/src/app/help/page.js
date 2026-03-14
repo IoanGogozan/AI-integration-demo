@@ -7,6 +7,7 @@ const usageSteps = [
   'Use Overview when you want the commercial framing before showing the workflow.',
   'Open Inbox to inspect a case, upload an attachment, and process it with AI.',
   'Use the case detail page to review the AI result, edit fields, and approve or complete the case.',
+  'Open Queues to show how routed cases are grouped into Finance, Support, Legal, Sales, and Admin worklists.',
   'Open Results for a fast view of concrete AI outputs across processed cases.',
   'Open Dashboard to show aggregate metrics and the review backlog.'
 ];
@@ -15,7 +16,9 @@ const presenterTips = [
   'Start with a seeded processed case if you need a safe, reliable path for a live demo.',
   'Use the AI process button live only after confirming the API key and backend are configured.',
   'Keep the message focused on business output: route, summary, deadline extraction, and reply draft.',
-  'Use manual review to show that the human stays in control of the final decision.'
+  'Use Queues after the inbox walkthrough to prove that the case was handed to a concrete team queue.',
+  'Use manual review to show that the human stays in control of the final decision.',
+  'Keep the attachment claim realistic: text-based files and simple PDFs are strong, OCR-heavy or Office-native automation is not the current promise.'
 ];
 
 export default function HelpPage() {
@@ -79,7 +82,8 @@ export default function HelpPage() {
           <span className="info-pill">1. Home</span>
           <span className="info-pill">2. Results</span>
           <span className="info-pill">3. Inbox case</span>
-          <span className="info-pill">4. Dashboard</span>
+          <span className="info-pill">4. Queues</span>
+          <span className="info-pill">5. Dashboard</span>
         </div>
       </section>
 
@@ -124,6 +128,10 @@ export default function HelpPage() {
           <article className="panel quick-link-card">
             <h2>Inbox</h2>
             <p className="panel-copy">Operational list of incoming cases and the main entry into case handling.</p>
+          </article>
+          <article className="panel quick-link-card">
+            <h2>Queues</h2>
+            <p className="panel-copy">Team-based operational queues that make the routing and handoff story explicit.</p>
           </article>
           <article className="panel quick-link-card">
             <h2>Results</h2>

@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { AssignmentPanel } from '../../../components/assignment-panel';
 import { AttachmentUploadForm } from '../../../components/attachment-upload-form';
 import { AppShell } from '../../../components/app-shell';
+import { BusinessActionsPanel } from '../../../components/business-actions-panel';
 import { ProcessCaseButton } from '../../../components/process-case-button';
 import { ReviewPanel } from '../../../components/review-panel';
 import { StatusBadge } from '../../../components/status-badge';
 import { requireAppSession } from '../../../lib/auth';
 import { getEmail } from '../../../lib/api';
-import { formatDateTime, formatLabel, formatListCount } from '../../../lib/formatters';
+import { formatDateTime, formatLabel, formatListCount, formatTeamLabel } from '../../../lib/formatters';
 import { canProcessCases, canReviewCases, canUploadAttachments, formatRoleLabel } from '../../../lib/permissions';
 
 export const dynamic = 'force-dynamic';
@@ -28,6 +30,29 @@ function getStatusTone(status) {
   return 'neutral';
 }
 
+function getProcessingAvailability(status, canProcess) {
+  if (!canProcess) {
+    return {
+      disabled: true,
+      message:
+        'Your role is read-only for AI processing. Use an operator, reviewer, or admin account to run the workflow.'
+    };
+  }
+
+  if (status === 'approved' || status === 'completed') {
+    return {
+      disabled: true,
+      message:
+        'Reprocessing is locked for approved or completed cases. Move the case back to needs review before running AI again.'
+    };
+  }
+
+  return {
+    disabled: false,
+    message: ''
+  };
+}
+
 export default async function EmailDetailPage({ params }) {
   const { id } = await params;
   const session = await requireAppSession();
@@ -35,6 +60,8 @@ export default async function EmailDetailPage({ params }) {
   const canUpload = canUploadAttachments(session.role);
   const canProcess = canProcessCases(session.role);
   const canReview = canReviewCases(session.role);
+  const canRunBusinessActions = canProcess;
+  const processingAvailability = getProcessingAvailability(email?.status, canProcess);
 
   if (!email) {
     notFound();
@@ -89,6 +116,14 @@ export default async function EmailDetailPage({ params }) {
               <dt>Current status</dt>
               <dd>{email.status.replaceAll('_', ' ')}</dd>
             </div>
+            <div>
+              <dt>Assigned team</dt>
+              <dd>{formatTeamLabel(email.assignedTeam)}</dd>
+            </div>
+            <div>
+              <dt>Assignment source</dt>
+              <dd>{email.assignmentSource ? formatLabel(email.assignmentSource) : 'Not assigned yet'}</dd>
+            </div>
           </dl>
 
           <div className="message-body">
@@ -129,6 +164,107 @@ export default async function EmailDetailPage({ params }) {
 
           <section className="panel">
             <div className="panel-header">
+              <h2>Routing decision</h2>
+              <span className="panel-kicker">
+                {email.assignedTeam ? `Assigned to ${formatTeamLabel(email.assignedTeam)}` : 'Awaiting assignment'}
+              </span>
+            </div>
+
+            <div className="result-preview">
+              <div className="result-row">
+                <span>Assigned team</span>
+                <strong>{formatTeamLabel(email.assignedTeam)}</strong>
+              </div>
+              <div className="result-row">
+                <span>Queue</span>
+                <strong>{email.assignedQueue ? formatTeamLabel(email.assignedQueue) : 'Not assigned yet'}</strong>
+              </div>
+              <div className="result-row">
+                <span>Assigned at</span>
+                <strong>{email.assignedAt ? formatDateTime(email.assignedAt) : 'Not assigned yet'}</strong>
+              </div>
+              <div className="result-row">
+                <span>Assignment source</span>
+                <strong>{email.assignmentSource ? formatLabel(email.assignmentSource) : 'Not assigned yet'}</strong>
+              </div>
+            </div>
+
+            {canReview ? <AssignmentPanel assignedTeam={email.assignedTeam} emailId={email.id} /> : null}
+          </section>
+
+          <section className="panel">
+            <div className="panel-header">
+              <h2>Workflow record</h2>
+              <span className="panel-kicker">Saved operational state</span>
+            </div>
+
+            <div className="result-preview">
+              <div className="result-row">
+                <span>Status</span>
+                <strong>{formatLabel(email.workflowRecord.status)}</strong>
+              </div>
+              <div className="result-row">
+                <span>Assigned team</span>
+                <strong>{formatTeamLabel(email.workflowRecord.assignedTeam)}</strong>
+              </div>
+              <div className="result-row">
+                <span>Processed at</span>
+                <strong>
+                  {email.workflowRecord.processedAt ? formatDateTime(email.workflowRecord.processedAt) : 'Not processed yet'}
+                </strong>
+              </div>
+              <div className="result-row">
+                <span>Latest review at</span>
+                <strong>
+                  {email.workflowRecord.latestReviewAt
+                    ? formatDateTime(email.workflowRecord.latestReviewAt)
+                    : 'No review activity yet'}
+                </strong>
+              </div>
+              <div className="result-row">
+                <span>Source files</span>
+                <strong>{email.workflowRecord.sourceFilesCount}</strong>
+              </div>
+            </div>
+
+            <div className="result-section">
+              <span className="panel-kicker">Audit summary</span>
+              {email.recentAuditEvents?.length ? (
+                <div className="audit-list">
+                  {email.recentAuditEvents.map((event) => (
+                    <article className="audit-item" key={event.id}>
+                      <div>
+                        <p className="row-title">{formatLabel(event.action)}</p>
+                        <p className="row-meta">{formatDateTime(event.createdAt)}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-copy">No workflow events recorded yet.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="panel">
+            <div className="panel-header">
+              <h2>Business actions</h2>
+              <span className="panel-kicker">Simulated workflow handoff</span>
+            </div>
+
+            <p className="panel-copy">
+              Record the next business step without external integrations. These actions are saved in the workflow audit trail.
+            </p>
+
+            <BusinessActionsPanel
+              assignedQueue={email.assignedQueue}
+              canAct={canRunBusinessActions}
+              emailId={email.id}
+            />
+          </section>
+
+          <section className="panel">
+            <div className="panel-header">
               <h2>AI result</h2>
               <span className="panel-kicker">
                 {email.latestAiResult ? 'Latest stored result' : 'Run AI to generate output'}
@@ -137,12 +273,16 @@ export default async function EmailDetailPage({ params }) {
 
             <ProcessCaseButton
               emailId={email.id}
-              disabled={!canProcess}
-              disabledMessage="Your role is read-only for AI processing. Use an operator, reviewer, or admin account to run the workflow."
+              disabled={processingAvailability.disabled}
+              disabledMessage={processingAvailability.message}
             />
 
             {email.latestAiResult ? (
               <div className="result-preview">
+                <div className="result-row">
+                  <span>Official result</span>
+                  <strong>Latest stored result</strong>
+                </div>
                 <div className="result-row">
                   <span>Category</span>
                   <strong>{formatLabel(email.latestAiResult.category)}</strong>
@@ -154,6 +294,20 @@ export default async function EmailDetailPage({ params }) {
                 <div className="result-row result-block">
                   <span>Summary</span>
                   <p>{email.latestAiResult.summary}</p>
+                </div>
+                <div className="result-row result-block">
+                  <span>Evidence</span>
+                  {email.latestAiResult.evidenceSnippets?.length ? (
+                    <div className="snippet-list">
+                      {email.latestAiResult.evidenceSnippets.map((snippet) => (
+                        <blockquote className="evidence-snippet" key={snippet}>
+                          "{snippet}"
+                        </blockquote>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>No evidence snippets available.</p>
+                  )}
                 </div>
                 <div className="result-row">
                   <span>Route</span>

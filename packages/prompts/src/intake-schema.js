@@ -18,6 +18,7 @@ export const intakeResponseJsonSchema = {
     'category',
     'priority',
     'summary',
+    'evidence_snippets',
     'suggested_route',
     'suggested_next_action',
     'suggested_reply',
@@ -35,6 +36,13 @@ export const intakeResponseJsonSchema = {
     },
     summary: {
       type: 'string'
+    },
+    evidence_snippets: {
+      type: 'array',
+      maxItems: 3,
+      items: {
+        type: 'string'
+      }
     },
     suggested_route: {
       type: 'string',
@@ -102,6 +110,7 @@ export function validateIntakeResult(value) {
   validateEnum('category', value.category, intakeCategories);
   validateEnum('priority', value.priority, intakePriorities);
   validateString('summary', value.summary);
+  validateStringArray('evidence_snippets', value.evidence_snippets, 3);
   validateEnum('suggested_route', value.suggested_route, intakeRoutes);
   validateString('suggested_next_action', value.suggested_next_action);
   validateString('suggested_reply', value.suggested_reply);
@@ -147,5 +156,21 @@ function validateString(fieldName, value) {
 function validateNullableString(fieldName, value) {
   if (value !== null && typeof value !== 'string') {
     throw new Error(`${fieldName} must be a string or null`);
+  }
+}
+
+function validateStringArray(fieldName, value, maxLength) {
+  if (!Array.isArray(value)) {
+    throw new Error(`${fieldName} must be an array`);
+  }
+
+  if (value.length > maxLength) {
+    throw new Error(`${fieldName} must contain at most ${maxLength} items`);
+  }
+
+  for (const item of value) {
+    if (typeof item !== 'string') {
+      throw new Error(`${fieldName} must contain only strings`);
+    }
   }
 }

@@ -28,7 +28,8 @@ export function ProcessCaseButton({ emailId, disabled = false, disabledMessage =
       });
 
       if (!response.ok) {
-        throw new Error('Processing failed');
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.message || 'Processing failed');
       }
 
       setMessage('Case processed and saved.');
@@ -38,7 +39,7 @@ export function ProcessCaseButton({ emailId, disabled = false, disabledMessage =
       });
     } catch (error) {
       console.error(error);
-      setMessage('Processing failed. Verify the API is running and try again.');
+      setMessage(error.message || 'Processing failed. Verify the API is running and try again.');
       setMessageTone('error');
     }
   }
