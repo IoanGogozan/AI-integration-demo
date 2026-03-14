@@ -8,7 +8,7 @@ const apiBaseUrl =
   process.env.API_BASE_URL ||
   'http://localhost:4000';
 
-export function AttachmentUploadForm({ emailId }) {
+export function AttachmentUploadForm({ emailId, disabled = false, disabledMessage = '' }) {
   const formRef = useRef(null);
   const router = useRouter();
   const [message, setMessage] = useState('');
@@ -56,11 +56,15 @@ export function AttachmentUploadForm({ emailId }) {
         name="attachment"
         type="file"
         accept=".txt,.md,.csv,.json,.pdf,text/plain,text/markdown,text/csv,application/json,application/pdf"
+        disabled={disabled}
         required
       />
-      <button className="primary-link upload-button" disabled={isPending} type="submit">
+      <button className="primary-link upload-button" disabled={disabled || isPending} type="submit">
         {isPending ? 'Uploading...' : 'Upload attachment'}
       </button>
+      {disabled && disabledMessage ? (
+        <p className="feedback-message feedback-info">{disabledMessage}</p>
+      ) : null}
       {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </form>
   );

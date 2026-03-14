@@ -6,6 +6,8 @@ import {
   attachSession,
   authenticateDemoUser,
   clearSessionCookie,
+  getDemoUserConfig,
+  requireRole,
   requireSession,
   setSessionCookie
 } from './lib/auth.js';
@@ -73,10 +75,17 @@ export function createApp() {
       return;
     }
 
+    const { password: _password, ...safeUser } = user;
     setSessionCookie(res, user);
 
     res.status(201).json({
-      user
+      user: safeUser
+    });
+  });
+
+  app.get('/auth/config', (_req, res) => {
+    res.json({
+      users: getDemoUserConfig()
     });
   });
 
@@ -142,7 +151,11 @@ export function createApp() {
     }
   });
 
-  app.post('/emails/:id/attachments', requireSession, upload.single('attachment'), async (req, res) => {
+  app.post(
+    '/emails/:id/attachments',
+    requireRole(['operator', 'reviewer', 'admin']),
+    upload.single('attachment'),
+    async (req, res) => {
     const email = await findEmailWithRelations(req.params.id);
 
     if (!email) {
@@ -199,9 +212,10 @@ export function createApp() {
         details: error.message
       });
     }
-  });
+    }
+  );
 
-  app.post('/emails/:id/process', requireSession, async (req, res) => {
+  app.post('/emails/:id/process', requireRole(['operator', 'reviewer', 'admin']), async (req, res) => {
     const email = await findEmailWithRelations(req.params.id);
 
     if (!email) {
@@ -229,7 +243,7 @@ export function createApp() {
     }
   });
 
-  app.patch('/emails/:id/review', requireSession, async (req, res) => {
+  app.patch('/emails/:id/review', requireRole(['reviewer', 'admin']), async (req, res) => {
     try {
       await updateAiReview(req.params.id, req.body);
       const updatedEmail = await findEmailWithRelations(req.params.id);
@@ -253,7 +267,7 @@ export function createApp() {
     }
   });
 
-  app.patch('/emails/:id/status', requireSession, async (req, res) => {
+  app.patch('/emails/:id/status', requireRole(['reviewer', 'admin']), async (req, res) => {
     try {
       await setEmailStatus(req.params.id, req.body.status);
       const updatedEmail = await findEmailWithRelations(req.params.id);

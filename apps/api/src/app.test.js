@@ -71,6 +71,13 @@ describe('createApp', () => {
     process.env.DEMO_AUTH_EMAIL = 'demo@norvix.ai';
     process.env.DEMO_AUTH_PASSWORD = 'demo1234';
     process.env.DEMO_AUTH_NAME = 'Demo Operator';
+    process.env.DEMO_AUTH_ROLE = 'operator';
+    process.env.DEMO_REVIEWER_EMAIL = 'reviewer@norvix.ai';
+    process.env.DEMO_REVIEWER_PASSWORD = 'review1234';
+    process.env.DEMO_REVIEWER_NAME = 'Demo Reviewer';
+    process.env.DEMO_VIEWER_EMAIL = 'viewer@norvix.ai';
+    process.env.DEMO_VIEWER_PASSWORD = 'view1234';
+    process.env.DEMO_VIEWER_NAME = 'Demo Viewer';
     prismaMock.$queryRaw.mockReset();
     prismaMock.email.findMany.mockReset();
     findEmailWithRelations.mockReset();
@@ -141,7 +148,37 @@ describe('createApp', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.user.email).toBe('demo@norvix.ai');
+    expect(response.body.user.role).toBe('operator');
     expect(response.headers['set-cookie']).toBeTruthy();
+  });
+
+  it('returns demo auth config without passwords', async () => {
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+
+    const response = await request(app).get('/auth/config');
+
+    expect(response.status).toBe(200);
+    expect(response.body.users.length).toBeGreaterThanOrEqual(3);
+    expect(response.body.users[0].password).toBeUndefined();
+  });
+
+  it('rejects process actions for a viewer role', async () => {
+    findEmailWithRelations.mockResolvedValue(emailRecord);
+
+    const { createApp } = await import('./app.js');
+    const app = createApp();
+    const agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: 'viewer@norvix.ai',
+      password: 'view1234'
+    });
+
+    const response = await agent.post('/emails/email-1/process');
+
+    expect(response.status).toBe(403);
+    expect(response.body.message).toBe('Insufficient role for this action');
   });
 
   it('processes an email and returns updated data', async () => {
@@ -175,8 +212,8 @@ describe('createApp', () => {
     const agent = request.agent(app);
 
     await agent.post('/auth/login').send({
-      email: 'demo@norvix.ai',
-      password: 'demo1234'
+      email: 'reviewer@norvix.ai',
+      password: 'review1234'
     });
 
     const response = await agent
@@ -199,8 +236,8 @@ describe('createApp', () => {
     const agent = request.agent(app);
 
     await agent.post('/auth/login').send({
-      email: 'demo@norvix.ai',
-      password: 'demo1234'
+      email: 'reviewer@norvix.ai',
+      password: 'review1234'
     });
 
     const response = await agent

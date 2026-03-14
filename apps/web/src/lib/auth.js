@@ -48,7 +48,8 @@ async function readSessionFromCookieStore() {
 
     return {
       email: payload.email,
-      name: payload.name
+      name: payload.name,
+      role: payload.role || 'viewer'
     };
   } catch (_error) {
     return null;

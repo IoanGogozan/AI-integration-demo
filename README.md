@@ -8,6 +8,7 @@ Start here:
 - [docs/IMPLEMENTATION_PLAN.md](/d:/Coding%20Apps/AI-Integration/docs/IMPLEMENTATION_PLAN.md)
 - [docs/DEMO_FLOW.md](/d:/Coding%20Apps/AI-Integration/docs/DEMO_FLOW.md)
 - [docs/HANDOFF_NOTES.md](/d:/Coding%20Apps/AI-Integration/docs/HANDOFF_NOTES.md)
+- [docs/LOCALIZATION_PREP.md](/d:/Coding%20Apps/AI-Integration/docs/LOCALIZATION_PREP.md)
 
 Current technical baseline:
 
@@ -66,7 +67,14 @@ Authentication note:
 
 - The demo uses a backend session stored in an HttpOnly cookie.
 - Set `AUTH_SECRET` in `.env` so the backend and Next.js server can verify the session cookie.
-- Default demo credentials are `demo@norvix.ai` / `demo1234` unless you override `DEMO_AUTH_EMAIL` and `DEMO_AUTH_PASSWORD`.
+- Default demo roles are:
+- `demo@norvix.ai` / `demo1234` as `operator`
+- `reviewer@norvix.ai` / `review1234` as `reviewer`
+- `viewer@norvix.ai` / `view1234` as `viewer`
+- `admin@norvix.ai` / `admin1234` as `admin`
+- `operator`, `reviewer`, and `admin` can upload attachments and process cases.
+- Only `reviewer` and `admin` can edit review fields or change final case status.
+- You can override the per-role defaults with the `DEMO_AUTH_*` variables or provide `DEMO_AUTH_USERS_JSON`.
 - Log in at `/login` before using the protected pages.
 
 AI processing note:
@@ -79,7 +87,7 @@ Seed dataset note:
 
 - `npm run db:setup` loads 12 seeded demo emails with multiple business scenarios.
 - The seed data is designed for sales, support, invoice, contract, complaint, and general admin walkthroughs.
-- The seed also includes 4 ready-made AI results so the `Results` page is useful immediately after setup.
+- The seed also includes multiple ready-made AI results across different statuses so the `Results`, `Dashboard`, and role-based review flow are useful immediately after setup.
 
 If port `5432` is already in use on your machine, start PostgreSQL with a different host port, for example:
 
@@ -94,6 +102,8 @@ Current backend endpoints:
 
 - `GET /health`
 - `GET /health/db`
+- `GET /auth/config`
+- `GET /auth/session`
 - `GET /emails`
 - `GET /emails/:id`
 - `GET /dashboard/stats`

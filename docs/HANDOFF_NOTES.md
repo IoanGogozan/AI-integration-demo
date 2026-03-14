@@ -16,6 +16,8 @@ Implemented:
 - workflow status updates
 - dashboard metrics
 - audit trail
+- lightweight role-based authentication
+- localization preparation for a future Norwegian default
 - automated test baseline for API and AI contract validation
 
 ## Runtime Expectations
@@ -32,6 +34,13 @@ Implemented:
 - `NEXT_PUBLIC_API_BASE_URL`
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
+- `AUTH_SECRET`
+- `DEMO_AUTH_EMAIL`
+- `DEMO_AUTH_PASSWORD`
+- `DEMO_REVIEWER_EMAIL`
+- `DEMO_REVIEWER_PASSWORD`
+- `DEMO_VIEWER_EMAIL`
+- `DEMO_VIEWER_PASSWORD`
 - `POSTGRES_DB`
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
@@ -39,22 +48,21 @@ Implemented:
 
 ## Known Gaps
 
-- no authentication or roles
 - no live Gmail or Outlook integration
 - no CRM, ERP, or ticketing integration
 - no OCR pipeline for complex scanned documents
 - no file cleanup lifecycle for uploaded local files
 - no frontend browser e2e coverage yet
 - no true background job runner yet
-- no localization layer yet
+- no full dictionary-based localization layer yet
 
 ## Recommended Next Work
 
-1. Add authentication and user roles if the demo will be shared more broadly.
+1. Expand the role model only if the demo needs permissions beyond viewer, operator, reviewer, and admin.
 2. Add a background job queue if processing becomes asynchronous.
-3. Add richer seeded AI results or preprocessed demo states for faster presentations.
+3. Add browser-level e2e coverage for login plus the main processing and review flow.
 4. Add live OpenAI testing with a real key and prompt tuning based on actual outputs.
-5. Add Norwegian localization after the English MVP behavior is stable.
+5. Add dictionary-based Norwegian localization after the English MVP behavior is stable.
 
 ## Current Cost-Oriented Default
 

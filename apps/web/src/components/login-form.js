@@ -48,6 +48,39 @@ export function LoginForm() {
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
+      <div className="account-shortcuts">
+        <button
+          className="ghost-link action-button"
+          onClick={() => {
+            setEmail('demo@norvix.ai');
+            setPassword('demo1234');
+          }}
+          type="button"
+        >
+          Use operator
+        </button>
+        <button
+          className="ghost-link action-button"
+          onClick={() => {
+            setEmail('reviewer@norvix.ai');
+            setPassword('review1234');
+          }}
+          type="button"
+        >
+          Use reviewer
+        </button>
+        <button
+          className="ghost-link action-button"
+          onClick={() => {
+            setEmail('viewer@norvix.ai');
+            setPassword('view1234');
+          }}
+          type="button"
+        >
+          Use viewer
+        </button>
+      </div>
+
       <label className="review-field">
         <span>Email</span>
         <input

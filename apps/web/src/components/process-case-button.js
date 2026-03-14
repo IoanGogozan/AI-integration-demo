@@ -8,7 +8,7 @@ const apiBaseUrl =
   process.env.API_BASE_URL ||
   'http://localhost:4000';
 
-export function ProcessCaseButton({ emailId }) {
+export function ProcessCaseButton({ emailId, disabled = false, disabledMessage = '' }) {
   const router = useRouter();
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState('info');
@@ -45,9 +45,17 @@ export function ProcessCaseButton({ emailId }) {
 
   return (
     <div className="process-action">
-      <button className="primary-link action-button" disabled={isPending} onClick={handleClick} type="button">
+      <button
+        className="primary-link action-button"
+        disabled={disabled || isPending}
+        onClick={handleClick}
+        type="button"
+      >
         {isPending ? 'Processing...' : 'Process with AI'}
       </button>
+      {disabled && disabledMessage ? (
+        <p className="feedback-message feedback-info">{disabledMessage}</p>
+      ) : null}
       {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </div>
   );

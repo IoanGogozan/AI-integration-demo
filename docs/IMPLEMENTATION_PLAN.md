@@ -244,4 +244,8 @@ Minimum output shape:
 
 ## Immediate Next Step
 
-The MVP baseline is implemented. The next practical step is to polish the demo flow further, add a lightweight automated test layer, and decide whether the next product step is integration work, localization, or authentication.
+The MVP baseline is implemented. The current practical next steps are:
+
+1. keep the seeded demo dataset presentation-ready
+2. maintain lightweight role-based access for demo sharing
+3. add dictionary-based localization when the English flow no longer changes frequently

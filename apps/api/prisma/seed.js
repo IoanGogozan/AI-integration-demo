@@ -1,5 +1,9 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+
+config({
+  path: new URL('../../../.env', import.meta.url)
+});
 
 const prisma = new PrismaClient();
 
@@ -63,7 +67,28 @@ const emails = [
     body:
       'Our Oslo team cannot access the internal portal after the latest update. We need this fixed today because shipments are blocked.',
     receivedAt: new Date('2026-03-12T06:45:00Z'),
-    status: 'processing',
+    status: 'needs_review',
+    aiResult: {
+      category: 'support_request',
+      priority: 'high',
+      summary:
+        'Portal access failure is blocking shipment operations in Oslo and needs immediate support ownership today.',
+      suggestedRoute: 'support',
+      suggestedNextAction: 'Assign the outage to support immediately, verify the failed update, and confirm restoration for the Oslo team.',
+      suggestedReply:
+        'Hello, we flagged this as urgent and our support team is investigating the portal access issue now. We will confirm restoration as soon as access is recovered.',
+      confidence: 0.71,
+      extractedJson: {
+        company_name: 'Arctic Logistics',
+        contact_name: null,
+        contact_email: 'support@arcticlogistics.no',
+        phone: null,
+        invoice_number: null,
+        amount: null,
+        deadline: 'today',
+        request_type: 'urgent access restoration'
+      }
+    },
     attachments: []
   },
   {
@@ -147,6 +172,27 @@ const emails = [
       'We were promised a credit note for the overcharge on the February invoice. Please confirm the amount and send the corrected document.',
     receivedAt: new Date('2026-03-13T07:15:00Z'),
     status: 'needs_review',
+    aiResult: {
+      category: 'invoice_billing',
+      priority: 'medium',
+      summary:
+        'Customer requests confirmation of a promised credit note and a corrected document for a February overcharge.',
+      suggestedRoute: 'finance',
+      suggestedNextAction: 'Confirm the overcharge amount against invoice BM-2048 and issue the credit note with the corrected billing document.',
+      suggestedReply:
+        'Hello, we are reviewing the February overcharge and will confirm the credit note amount together with the corrected document shortly.',
+      confidence: 0.79,
+      extractedJson: {
+        company_name: 'Bergen Marine',
+        contact_name: null,
+        contact_email: 'billing@bergenmarine.no',
+        phone: null,
+        invoice_number: 'BM-2048',
+        amount: 'NOK 4,250',
+        deadline: null,
+        request_type: 'credit note confirmation'
+      }
+    },
     attachments: [
       {
         fileName: 'february-billing-case.txt',
@@ -192,7 +238,28 @@ const emails = [
     body:
       'Can you confirm where completed onboarding forms should be routed internally? We want to standardize the process for new clients.',
     receivedAt: new Date('2026-03-13T10:05:00Z'),
-    status: 'new',
+    status: 'approved',
+    aiResult: {
+      category: 'general_admin',
+      priority: 'low',
+      summary:
+        'Sender wants a standard internal routing rule for completed onboarding forms used with new clients.',
+      suggestedRoute: 'admin',
+      suggestedNextAction: 'Define the default onboarding route across admin, finance, and support and publish it as the new internal rule.',
+      suggestedReply:
+        'Hello, we can help standardize this flow and document the default routing path for completed onboarding forms.',
+      confidence: 0.81,
+      extractedJson: {
+        company_name: 'Clear Accounting',
+        contact_name: 'Anna',
+        contact_email: 'anna@clearaccounting.no',
+        phone: null,
+        invoice_number: null,
+        amount: null,
+        deadline: null,
+        request_type: 'onboarding form routing'
+      }
+    },
     attachments: [
       {
         fileName: 'onboarding-process-notes.txt',
@@ -208,7 +275,28 @@ const emails = [
     body:
       'We sent our agreement package last week and still have no confirmation. This delay is affecting our procurement timeline.',
     receivedAt: new Date('2026-03-13T12:40:00Z'),
-    status: 'new',
+    status: 'needs_review',
+    aiResult: {
+      category: 'complaint',
+      priority: 'high',
+      summary:
+        'Customer complains about missing confirmation on an agreement package and says the delay is affecting procurement timing.',
+      suggestedRoute: 'admin',
+      suggestedNextAction: 'Acknowledge the delay, confirm receipt ownership, and provide a concrete review timeline for the agreement package.',
+      suggestedReply:
+        'Hello, thank you for following up. We are confirming ownership of the agreement package now and will send you an updated review timeline shortly.',
+      confidence: 0.74,
+      extractedJson: {
+        company_name: 'Fjelltek',
+        contact_name: null,
+        contact_email: 'procurement@fjelltek.no',
+        phone: null,
+        invoice_number: null,
+        amount: null,
+        deadline: null,
+        request_type: 'complaint about intake delay'
+      }
+    },
     attachments: [
       {
         fileName: 'agreement-package-summary.txt',
@@ -301,8 +389,8 @@ async function main() {
         data: {
           emailId: email.id,
           status: 'succeeded',
-          startedAt: item.receivedAt,
-          finishedAt: item.receivedAt
+          startedAt: new Date(item.receivedAt.getTime() + 5 * 60 * 1000),
+          finishedAt: new Date(item.receivedAt.getTime() + 8 * 60 * 1000)
         }
       });
 

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoutButton } from './logout-button';
+import { formatRoleLabel } from '../lib/permissions';
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -38,6 +39,7 @@ export function PrimaryNav({ session }) {
           );
         })}
         <span className="nav-user">{session.name}</span>
+        <span className="role-pill">{formatRoleLabel(session.role)}</span>
         <LogoutButton />
       </div>
     </nav>

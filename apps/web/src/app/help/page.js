@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AppShell } from '../../components/app-shell';
+import { getLocalizationSummary, localizationConfig } from '../../lib/localization';
 
 const usageSteps = [
   'Open Home for the shortest path into the demo and the main navigation.',
@@ -79,6 +80,24 @@ export default function HelpPage() {
           <span className="info-pill">2. Results</span>
           <span className="info-pill">3. Inbox case</span>
           <span className="info-pill">4. Dashboard</span>
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>Localization readiness</h2>
+            <p className="panel-copy">{getLocalizationSummary()}</p>
+          </div>
+          <span className="panel-kicker">Future-ready setup</span>
+        </div>
+
+        <div className="pill-row">
+          {localizationConfig.supportedLocales.map((locale) => (
+            <span className="info-pill" key={locale.code}>
+              {locale.label} · {locale.status.replaceAll('_', ' ')}
+            </span>
+          ))}
         </div>
       </section>
 

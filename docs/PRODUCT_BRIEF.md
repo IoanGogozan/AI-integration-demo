@@ -9,6 +9,7 @@ This is the living source-of-truth document for the AI integration demo. It shou
 - All new documentation in this repository must be written in English.
 - The application UI, source code, prompts, database naming, API contracts, and internal comments must be written in English.
 - Norwegian language support will be added later and is expected to become the default product language after the English MVP is complete and stable.
+- The current preparation target for future localization is Norwegian Bokmal (`nb`), while all current runtime copy remains English.
 - Existing planning documents may evolve during development. When they do, this document and the implementation plan must be updated to reflect the current decision.
 
 ## Project Summary
@@ -154,6 +155,13 @@ The repository should eventually contain:
 - scenarios covering sales, support, invoice clarification, contract intake, and general admin cases
 
 The current seeded dataset should be maintained as a reusable demo asset and expanded only when it improves the quality of the presentation or validates a new product capability.
+
+The seeded dataset should also preserve a useful distribution of:
+
+- read-only cases for viewer demos
+- cases ready for operator processing
+- cases requiring reviewer approval
+- cases with already stored AI output for presentation shortcuts
 
 ## Acceptance Outcome
 

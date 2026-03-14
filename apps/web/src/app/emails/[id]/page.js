@@ -5,8 +5,10 @@ import { AppShell } from '../../../components/app-shell';
 import { ProcessCaseButton } from '../../../components/process-case-button';
 import { ReviewPanel } from '../../../components/review-panel';
 import { StatusBadge } from '../../../components/status-badge';
+import { requireAppSession } from '../../../lib/auth';
 import { getEmail } from '../../../lib/api';
 import { formatDateTime, formatLabel, formatListCount } from '../../../lib/formatters';
+import { canProcessCases, canReviewCases, canUploadAttachments, formatRoleLabel } from '../../../lib/permissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +30,11 @@ function getStatusTone(status) {
 
 export default async function EmailDetailPage({ params }) {
   const { id } = await params;
+  const session = await requireAppSession();
   const email = await getEmail(id);
+  const canUpload = canUploadAttachments(session.role);
+  const canProcess = canProcessCases(session.role);
+  const canReview = canReviewCases(session.role);
 
   if (!email) {
     notFound();
@@ -40,9 +46,12 @@ export default async function EmailDetailPage({ params }) {
       title={email.subject}
       description="Review the incoming request, inspect attachments, and prepare the case for AI processing."
       actions={
-        <Link href="/inbox" className="primary-link">
-          Back to inbox
-        </Link>
+        <>
+          <span className="app-note">Signed in as {formatRoleLabel(session.role)}</span>
+          <Link href="/inbox" className="primary-link">
+            Back to inbox
+          </Link>
+        </>
       }
     >
       <section className="detail-grid">
@@ -95,7 +104,11 @@ export default async function EmailDetailPage({ params }) {
               <span className="panel-kicker">Text extracted for review</span>
             </div>
 
-            <AttachmentUploadForm emailId={email.id} />
+            <AttachmentUploadForm
+              emailId={email.id}
+              disabled={!canUpload}
+              disabledMessage="Your role can view attachments, but only operator, reviewer, or admin accounts can upload files."
+            />
 
             {email.attachments.length === 0 ? (
               <p className="empty-copy">No attachments are linked to this case yet.</p>
@@ -122,7 +135,11 @@ export default async function EmailDetailPage({ params }) {
               </span>
             </div>
 
-            <ProcessCaseButton emailId={email.id} />
+            <ProcessCaseButton
+              emailId={email.id}
+              disabled={!canProcess}
+              disabledMessage="Your role is read-only for AI processing. Use an operator, reviewer, or admin account to run the workflow."
+            />
 
             {email.latestAiResult ? (
               <div className="result-preview">
@@ -186,12 +203,22 @@ export default async function EmailDetailPage({ params }) {
             )}
           </section>
 
-          {email.latestAiResult ? (
+          {email.latestAiResult && canReview ? (
             <ReviewPanel
               aiResult={email.latestAiResult}
               currentStatus={email.status}
               emailId={email.id}
             />
+          ) : email.latestAiResult ? (
+            <section className="panel">
+              <div className="panel-header">
+                <h2>Manual review</h2>
+                <span className="panel-kicker">Read-only for your role</span>
+              </div>
+              <p className="empty-copy">
+                Viewer and operator accounts can inspect the AI result, but only reviewer or admin accounts can edit review fields and change the final workflow status.
+              </p>
+            </section>
           ) : null}
         </aside>
       </section>

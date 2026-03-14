@@ -12,13 +12,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "start:api": "npm run start --workspace @ai-integration/api",
-    "db:generate": "npm run prisma:generate --workspace @ai-integration/api",
-    "db:push": "npm run prisma:push --workspace @ai-integration/api",
-    "db:seed": "npm run db:seed --workspace @ai-integration/api",
-    "db:setup": "npm run db:setup --workspace @ai-integration/api"
+    "db:generate": "dotenv -e .env -- npm run prisma:generate --workspace @ai-integration/api",
+    "db:push": "dotenv -e .env -- npm run prisma:push --workspace @ai-integration/api",
+    "db:seed": "dotenv -e .env -- npm run db:seed --workspace @ai-integration/api",
+    "db:setup": "dotenv -e .env -- npm run db:setup --workspace @ai-integration/api"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
+    "dotenv-cli": "^7.4.4",
     "supertest": "^7.1.1",
     "vitest": "^3.2.4"
   }
