@@ -5,7 +5,7 @@ import { formatDateTime } from '../../lib/formatters';
 
 export const dynamic = 'force-dynamic';
 
-const demoPoints = [
+const overviewPoints = [
   'Turn incoming emails and attachments into structured workflow steps.',
   'Keep humans in control with manual review before final action.',
   'Show concrete business outputs: category, priority, route, summary, and draft reply.',
@@ -20,23 +20,23 @@ export default async function OverviewPage() {
 
   return (
     <AppShell
-      eyebrow="Demo overview"
-      title="AI workflow demo for Norwegian SMBs"
-      description="A presentation-first view of what the product does, why it matters, and which cases are best to show in a live walkthrough."
+      eyebrow="Overview"
+      title="How the workflow helps"
+      description="Use this page for extra context after you have already seen the main workflow in Inbox and Queues."
       actions={
-        <Link href="/results" className="primary-link">
-          View results
+        <Link href="/inbox" className="primary-link">
+          Open inbox
         </Link>
       }
     >
       <section className="showcase-grid">
         <article className="panel spotlight-panel">
           <div className="panel-header">
-            <h2>What this demo proves</h2>
-            <span className="panel-kicker">Commercial framing</span>
+            <h2>What this workflow improves</h2>
+            <span className="panel-kicker">Business value</span>
           </div>
           <div className="showcase-list">
-            {demoPoints.map((item, index) => (
+            {overviewPoints.map((item, index) => (
               <article className="showcase-item" key={item}>
                 <span className="showcase-index">{String(index + 1).padStart(2, '0')}</span>
                 <p>{item}</p>
@@ -47,8 +47,8 @@ export default async function OverviewPage() {
 
         <article className="panel">
           <div className="panel-header">
-            <h2>Current demo state</h2>
-            <span className="panel-kicker">Live application metrics</span>
+            <h2>Current workflow state</h2>
+            <span className="panel-kicker">Current numbers</span>
           </div>
           <div className="metric-list">
             <div className="metric-row">
@@ -76,7 +76,7 @@ export default async function OverviewPage() {
           <div>
             <h2>Best cases to show</h2>
             <p className="panel-copy">
-              These cases are useful because they make the extracted output and routing logic easy to understand.
+              These cases are useful after the main workflow, when you want extra business context or discussion points.
             </p>
           </div>
           <span className="panel-kicker">{highlightedCases.length} highlighted cases</span>
@@ -112,7 +112,7 @@ export default async function OverviewPage() {
         </div>
 
         {processedCases.length === 0 ? (
-          <p className="empty-copy">No seeded AI results are available right now.</p>
+          <p className="empty-copy">No processed cases are available right now.</p>
         ) : (
           <div className="showcase-grid compact-grid">
             {processedCases.map((email) => (

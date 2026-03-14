@@ -28,7 +28,7 @@ export async function InboxPageContent({ selectedTeam }) {
 
   return (
     <AppShell
-      eyebrow="Phase 2: Inbox"
+      eyebrow="Inbox"
       title="AI Intake Assistant"
       description="A review-ready inbox for email and document intake workflows aimed at Norwegian SMB operations teams."
       actions={
@@ -63,7 +63,7 @@ export async function InboxPageContent({ selectedTeam }) {
           <div>
             <h2>Inbox</h2>
             <p className="panel-copy">
-              Seeded cases from PostgreSQL, ready for review, AI processing, and manual approval.
+              Open a case, run AI, review the result, and then check Queues for the team handoff.
             </p>
           </div>
           <span className="panel-kicker">{formatListCount(emails.length, 'case', 'cases')}</span>
@@ -117,7 +117,7 @@ export async function InboxPageContent({ selectedTeam }) {
                 </div>
                 <div>
                   <Link href={`/emails/${email.id}`} className="primary-link">
-                    Review case
+                    Open case
                   </Link>
                 </div>
               </article>

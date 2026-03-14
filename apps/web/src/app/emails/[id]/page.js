@@ -34,8 +34,7 @@ function getProcessingAvailability(status, canProcess) {
   if (!canProcess) {
     return {
       disabled: true,
-      message:
-        'Your role is read-only for AI processing. Use an operator, reviewer, or admin account to run the workflow.'
+      message: 'Your account can view this case, but only processing-enabled accounts can run AI.'
     };
   }
 
@@ -69,7 +68,7 @@ export default async function EmailDetailPage({ params }) {
 
   return (
     <AppShell
-      eyebrow="Phase 2: Case detail"
+      eyebrow="Case"
       title={email.subject}
       description="Review the incoming request, inspect attachments, and prepare the case for AI processing."
       actions={
@@ -142,7 +141,7 @@ export default async function EmailDetailPage({ params }) {
             <AttachmentUploadForm
               emailId={email.id}
               disabled={!canUpload}
-              disabledMessage="Your role can view attachments, but only operator, reviewer, or admin accounts can upload files."
+              disabledMessage="Your account can view attachments, but only upload-enabled accounts can add files."
             />
 
             {email.attachments.length === 0 ? (
@@ -370,7 +369,7 @@ export default async function EmailDetailPage({ params }) {
                 <span className="panel-kicker">Read-only for your role</span>
               </div>
               <p className="empty-copy">
-                Viewer and operator accounts can inspect the AI result, but only reviewer or admin accounts can edit review fields and change the final workflow status.
+                This account can inspect the AI result, but only review-enabled accounts can edit fields or change the final status.
               </p>
             </section>
           ) : null}

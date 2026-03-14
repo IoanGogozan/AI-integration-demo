@@ -1,32 +1,34 @@
 import Link from 'next/link';
 import { AppShell } from '../../components/app-shell';
-import { getLocalizationSummary, localizationConfig } from '../../lib/localization';
 
-const usageSteps = [
-  'Open Home for the shortest path into the demo and the main navigation.',
-  'Use Overview when you want the commercial framing before showing the workflow.',
-  'Open Inbox to inspect a case, upload an attachment, and process it with AI.',
-  'Use the case detail page to review the AI result, edit fields, and approve or complete the case.',
-  'Open Queues to show how routed cases are grouped into Finance, Support, Legal, Sales, and Admin worklists.',
-  'Open Results for a fast view of concrete AI outputs across processed cases.',
-  'Open Dashboard to show aggregate metrics and the review backlog.'
+const testingSteps = [
+  'Open Inbox.',
+  'Choose a case.',
+  'Open the case and click Process with AI.',
+  'Review the category, priority, route, summary, evidence, and reply draft.',
+  'Open Queues to see which team should handle the case next.',
+  'Change status or assignment if you want to simulate human review.'
 ];
 
-const presenterTips = [
-  'Start with a seeded processed case if you need a safe, reliable path for a live demo.',
-  'Use the AI process button live only after confirming the API key and backend are configured.',
-  'Keep the message focused on business output: route, summary, deadline extraction, and reply draft.',
-  'Use Queues after the inbox walkthrough to prove that the case was handed to a concrete team queue.',
-  'Use manual review to show that the human stays in control of the final decision.',
-  'Keep the attachment claim realistic: text-based files and simple PDFs are strong, OCR-heavy or Office-native automation is not the current promise.'
+const expectedResults = [
+  'The app reads the email and any extracted attachment text.',
+  'The AI suggests a category, priority, summary, route, and reply draft.',
+  'The result is saved in a workflow record with team assignment and audit history.',
+  'Queues shows which team should handle the case next.'
+];
+
+const scopeNotes = [
+  'Best for text-based attachments, simple PDFs, and structured intake documents.',
+  'Includes AI fallback behavior if no API key is configured or structured output is invalid.',
+  'Not positioned yet as OCR-heavy image processing or full Office document automation.'
 ];
 
 export default function HelpPage() {
   return (
     <AppShell
       eyebrow="Help"
-      title="How to use the demo"
-      description="A short guide for navigating the application, running the main workflow, and presenting the product clearly."
+      title="How to test this demo"
+      description="Open a case, run AI, review the result, and see which team should handle it next."
       actions={
         <Link href="/inbox" className="primary-link">
           Open inbox
@@ -36,14 +38,14 @@ export default function HelpPage() {
       <section className="dashboard-grid">
         <article className="panel">
           <div className="panel-header">
-            <h2>Core workflow</h2>
-            <span className="panel-kicker">Day-to-day use</span>
+            <h2>What this demo does</h2>
+            <span className="panel-kicker">In simple terms</span>
           </div>
           <div className="help-list">
-            {usageSteps.map((step, index) => (
-              <article className="help-item" key={step}>
+            {expectedResults.map((item, index) => (
+              <article className="help-item" key={item}>
                 <span className="showcase-index">{String(index + 1).padStart(2, '0')}</span>
-                <p>{step}</p>
+                <p>{item}</p>
               </article>
             ))}
           </div>
@@ -51,14 +53,14 @@ export default function HelpPage() {
 
         <article className="panel">
           <div className="panel-header">
-            <h2>Presenter guidance</h2>
-            <span className="panel-kicker">Demo-friendly tips</span>
+            <h2>How to test it</h2>
+            <span className="panel-kicker">Fast path</span>
           </div>
           <div className="help-list">
-            {presenterTips.map((tip, index) => (
-              <article className="help-item" key={tip}>
+            {testingSteps.map((step, index) => (
+              <article className="help-item" key={step}>
                 <span className="showcase-index">{String(index + 1).padStart(2, '0')}</span>
-                <p>{tip}</p>
+                <p>{step}</p>
               </article>
             ))}
           </div>
@@ -68,79 +70,42 @@ export default function HelpPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h2>Quick start</h2>
+            <h2>What this demo is meant to show</h2>
             <p className="panel-copy">
-              Use this path when you need the shortest reliable route through the demo.
+              Faster case handling, less manual work, better routing, and human review before final action.
             </p>
           </div>
-          <Link href="/results" className="ghost-link">
-            Start with results
+          <Link href="/queues" className="ghost-link">
+            Open queues
           </Link>
         </div>
 
         <div className="pill-row">
-          <span className="info-pill">1. Home</span>
-          <span className="info-pill">2. Results</span>
-          <span className="info-pill">3. Inbox case</span>
-          <span className="info-pill">4. Queues</span>
-          <span className="info-pill">5. Dashboard</span>
+          <span className="info-pill">Less manual work</span>
+          <span className="info-pill">Better routing</span>
+          <span className="info-pill">Human review</span>
+          <span className="info-pill">Workflow record</span>
         </div>
       </section>
 
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h2>Localization readiness</h2>
-            <p className="panel-copy">{getLocalizationSummary()}</p>
-          </div>
-          <span className="panel-kicker">Future-ready setup</span>
-        </div>
-
-        <div className="pill-row">
-          {localizationConfig.supportedLocales.map((locale) => (
-            <span className="info-pill" key={locale.code}>
-              {locale.label} · {locale.status.replaceAll('_', ' ')}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <h2>Navigation map</h2>
+            <h2>What it does not do yet</h2>
             <p className="panel-copy">
-              Each page has a distinct role so you can move between story, workflow, and metrics without losing context.
+              Keep the scope realistic when you show the demo.
             </p>
           </div>
-          <span className="panel-kicker">Page purpose</span>
+          <span className="panel-kicker">Current scope</span>
         </div>
 
-        <div className="quick-link-grid">
-          <article className="panel quick-link-card">
-            <h2>Home</h2>
-            <p className="panel-copy">Starting point with live stats, featured case, and direct links into the rest of the product.</p>
-          </article>
-          <article className="panel quick-link-card">
-            <h2>Overview</h2>
-            <p className="panel-copy">Commercial framing and recommended demo cases for a business audience.</p>
-          </article>
-          <article className="panel quick-link-card">
-            <h2>Inbox</h2>
-            <p className="panel-copy">Operational list of incoming cases and the main entry into case handling.</p>
-          </article>
-          <article className="panel quick-link-card">
-            <h2>Queues</h2>
-            <p className="panel-copy">Team-based operational queues that make the routing and handoff story explicit.</p>
-          </article>
-          <article className="panel quick-link-card">
-            <h2>Results</h2>
-            <p className="panel-copy">Processed AI output across cases when you want to show outcomes first.</p>
-          </article>
-          <article className="panel quick-link-card">
-            <h2>Dashboard</h2>
-            <p className="panel-copy">Aggregate metrics for categories, priorities, and review workload.</p>
-          </article>
+        <div className="help-list">
+          {scopeNotes.map((item, index) => (
+            <article className="help-item" key={item}>
+              <span className="showcase-index">{String(index + 1).padStart(2, '0')}</span>
+              <p>{item}</p>
+            </article>
+          ))}
         </div>
       </section>
     </AppShell>

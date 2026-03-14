@@ -89,7 +89,7 @@ export function ReviewPanel({ emailId, aiResult, currentStatus }) {
         <div>
           <h2>Manual review</h2>
           <p className="panel-copy">
-            Edit the AI output before approving or routing the case forward.
+            A human can edit, approve, or complete the case before the workflow moves on.
           </p>
         </div>
         <span className="panel-kicker">Current status: {currentStatus.replaceAll('_', ' ')}</span>

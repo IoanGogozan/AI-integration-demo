@@ -14,30 +14,30 @@ export default async function ResultsPage() {
     <AppShell
       eyebrow="AI results"
       title="Concrete AI output"
-      description="A results-first view of the generated summaries, routes, reply drafts, and extracted fields across processed cases."
+      description="Use this page when you want to see finished results without running the workflow live."
       actions={
-        <Link href="/dashboard" className="primary-link">
-          Open dashboard
+        <Link href="/inbox" className="primary-link">
+          Open inbox
         </Link>
       }
     >
       <section className="showcase-grid">
         <article className="panel spotlight-panel">
           <div className="panel-header">
-            <h2>Why this page matters</h2>
-            <span className="panel-kicker">Presentation shortcut</span>
+            <h2>What you can check here</h2>
+            <span className="panel-kicker">Finished results</span>
           </div>
           <div className="metric-list">
             <div className="metric-row">
-              <span>Processed results ready to show</span>
+              <span>Processed cases available</span>
               <strong>{totalResults}</strong>
             </div>
             <div className="metric-row">
               <span>Best use</span>
-              <strong>Outcome-first demos</strong>
+              <strong>Quick result review</strong>
             </div>
             <div className="metric-row">
-              <span>What to highlight</span>
+              <span>Main fields</span>
               <strong>Category, route, summary, draft</strong>
             </div>
           </div>
@@ -45,8 +45,8 @@ export default async function ResultsPage() {
 
         <article className="panel">
           <div className="panel-header">
-            <h2>Suggested flow</h2>
-            <span className="panel-kicker">Simple presenter mode</span>
+            <h2>Simple way to use it</h2>
+            <span className="panel-kicker">Quick path</span>
           </div>
           <div className="showcase-list">
             <article className="showcase-item">
@@ -66,13 +66,13 @@ export default async function ResultsPage() {
       </section>
 
       <section className="panel">
-        <div className="panel-header">
-          <div>
-            <h2>Processed cases</h2>
-            <p className="panel-copy">
-              Use this page when you want to show the actual AI output instead of the inbox mechanics.
-            </p>
-          </div>
+          <div className="panel-header">
+            <div>
+              <h2>Processed cases</h2>
+              <p className="panel-copy">
+                Use this page when you want to inspect saved AI output instead of stepping through the full flow.
+              </p>
+            </div>
           <span className="panel-kicker">{processedEmails.length} results available</span>
         </div>
 

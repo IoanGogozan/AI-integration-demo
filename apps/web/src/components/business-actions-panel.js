@@ -62,23 +62,28 @@ export function BusinessActionsPanel({ emailId, assignedQueue, canAct }) {
   }
 
   return (
-    <div className="review-actions">
-      <button
-        className="primary-link action-button"
-        disabled={isPending}
-        onClick={() => runAction('create_internal_task')}
-        type="button"
-      >
-        Create internal task
-      </button>
-      <button
-        className="ghost-link action-button"
-        disabled={isPending}
-        onClick={() => runAction('send_to_queue')}
-        type="button"
-      >
-        Send to queue
-      </button>
+    <div>
+      <p className="panel-copy compact-copy">
+        These actions simulate the next operational step and store it in the workflow history.
+      </p>
+      <div className="review-actions">
+        <button
+          className="primary-link action-button"
+          disabled={isPending}
+          onClick={() => runAction('create_internal_task')}
+          type="button"
+        >
+          Create internal task
+        </button>
+        <button
+          className="ghost-link action-button"
+          disabled={isPending}
+          onClick={() => runAction('send_to_queue')}
+          type="button"
+        >
+          Send to queue
+        </button>
+      </div>
       {message ? <p className={`feedback-message feedback-${messageTone}`}>{message}</p> : null}
     </div>
   );

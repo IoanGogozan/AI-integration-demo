@@ -139,7 +139,13 @@ function buildEvidenceSnippets(email) {
     .filter(Boolean)
     .map((value) => value.replace(/\s+/g, ' '))
     .filter((value) => value.length >= 18)
-    .slice(0, 3);
+    .map((value) => ({
+      value,
+      score: getEvidenceScore(value)
+    }))
+    .sort((left, right) => right.score - left.score)
+    .slice(0, 3)
+    .map((item) => item.value);
 
   return candidates;
 }
@@ -167,5 +173,32 @@ function capitalize(value) {
 }
 
 function supportsReasoningEffort(modelName) {
-  return modelName.startsWith('gpt-5.1');
+  return modelName.startsWith('gpt-5');
+}
+
+function getEvidenceScore(value) {
+  const normalized = value.toLowerCase();
+  let score = 0;
+
+  if (normalized.includes('invoice')) {
+    score += 4;
+  }
+
+  if (normalized.includes('nok') || /\b\d+[.,]?\d*\b/.test(normalized)) {
+    score += 3;
+  }
+
+  if (/\b\d{4}-\d{2}-\d{2}\b/.test(normalized) || normalized.includes('march') || normalized.includes('friday')) {
+    score += 3;
+  }
+
+  if (normalized.includes('urgent') || normalized.includes('today') || normalized.includes('blocked')) {
+    score += 4;
+  }
+
+  if (normalized.includes('agreement') || normalized.includes('contract')) {
+    score += 2;
+  }
+
+  return score;
 }

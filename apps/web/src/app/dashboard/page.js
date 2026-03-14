@@ -32,9 +32,9 @@ export default async function DashboardPage({ searchParams }) {
 
   return (
     <AppShell
-      eyebrow="Phase 6: Dashboard"
+      eyebrow="Dashboard"
       title="Workflow dashboard"
-      description="A compact operations view for demo metrics, AI processing output, and cases that still need attention."
+      description="A compact operations view of case volume, routing, priorities, and cases that still need attention."
       actions={
         <Link href="/inbox" className="primary-link">
           Back to inbox

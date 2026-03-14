@@ -38,7 +38,7 @@ export default async function QueuesPage({ searchParams }) {
     <AppShell
       eyebrow="Queues"
       title="Operational team queues"
-      description="A queue-first view of routed cases so the workflow feels like real handoff automation, not only inbox classification."
+      description="Shows which team should handle each case next."
       actions={
         <Link href="/dashboard" className="primary-link">
           Open dashboard
@@ -99,7 +99,7 @@ export default async function QueuesPage({ searchParams }) {
           <div>
             <h2>{activeTeam ? `${formatTeamLabel(activeTeam)} queue` : 'All routed queues'}</h2>
             <p className="panel-copy">
-              Use this page to show that the AI output becomes a team-owned operational queue, not just a suggested route.
+              Each case shown here has already been routed into the next team-owned step of the workflow.
             </p>
           </div>
           <span className="panel-kicker">{formatListCount(emails.length, 'case', 'cases')}</span>

@@ -46,6 +46,9 @@ export function ProcessCaseButton({ emailId, disabled = false, disabledMessage =
 
   return (
     <div className="process-action">
+      <p className="panel-copy compact-copy">
+        Reads the email and attachment, extracts key data, suggests a route, and saves the result.
+      </p>
       <button
         className="primary-link action-button"
         disabled={disabled || isPending}

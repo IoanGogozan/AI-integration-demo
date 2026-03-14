@@ -20,6 +20,7 @@ describe('processEmailWithAi', () => {
     expect(result.category).toBe('invoice_billing');
     expect(result.suggested_route).toBe('finance');
     expect(result.evidence_snippets.length).toBeGreaterThan(0);
+    expect(result.evidence_snippets[0].toLowerCase()).toContain('invoice');
     expect(result.extracted_fields.invoice_number).toBe('inv-42');
   });
 });
