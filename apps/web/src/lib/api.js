@@ -3,6 +3,16 @@ import { redirect } from 'next/navigation';
 
 const defaultApiBaseUrl = process.env.API_BASE_URL || 'http://localhost:4000';
 
+function isRedirectError(error) {
+  return Boolean(
+    error &&
+      typeof error === 'object' &&
+      'digest' in error &&
+      typeof error.digest === 'string' &&
+      error.digest.startsWith('NEXT_REDIRECT')
+  );
+}
+
 async function request(path) {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore
@@ -34,6 +44,10 @@ export async function getEmails() {
     const data = await request('/emails');
     return data.items || [];
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     console.error(error);
     return [];
   }
@@ -44,6 +58,10 @@ export async function getEmail(id) {
     const data = await request(`/emails/${id}`);
     return data.item || null;
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     console.error(error);
     return null;
   }
@@ -53,6 +71,10 @@ export async function getDashboardStats() {
   try {
     return await request('/dashboard/stats');
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     console.error(error);
     return {
       totals: {
