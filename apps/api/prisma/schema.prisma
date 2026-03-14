@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmailStatus {
+  new
+  processing
+  needs_review
+  approved
+  completed
+}
+
+enum ProcessingStatus {
+  queued
+  running
+  succeeded
+  failed
+}
+
+model Email {
+  id          String          @id @default(cuid())
+  sender      String
+  subject     String
+  body        String
+  receivedAt  DateTime
+  status      EmailStatus     @default(new)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  attachments Attachment[]
+  aiResults   AiResult[]
+  jobs        ProcessingJob[]
+
+  @@map("emails")
+}
+
+model Attachment {
+  id            String   @id @default(cuid())
+  emailId       String
+  fileName      String
+  mimeType      String
+  storagePath   String?
+  extractedText String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  email         Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
+
+model AiResult {
+  id                  String   @id @default(cuid())
+  emailId             String
+  category            String
+  priority            String
+  summary             String
+  suggestedRoute      String
+  suggestedNextAction String
+  suggestedReply      String
+  confidence          Decimal  @db.Decimal(3, 2)
+  extractedJson       Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  email               Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("ai_results")
+}
+
+model ProcessingJob {
+  id         String           @id @default(cuid())
+  emailId    String
+  status     ProcessingStatus @default(queued)
+  startedAt  DateTime?
+  finishedAt DateTime?
+  error      String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  email      Email            @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@map("processing_jobs")
+}
+
+model AuditEvent {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  action     String
+  payload    Json
+  createdAt  DateTime @default(now())
+
+  @@map("audit_events")
+}
