@@ -1,100 +1,170 @@
 import Link from 'next/link';
 import { AppShell } from '../components/app-shell';
-import { StatusBadge } from '../components/status-badge';
-import { getEmails } from '../lib/api';
-import { formatDateTime, formatListCount } from '../lib/formatters';
+import { getDashboardStats, getEmails } from '../lib/api';
 
 export const dynamic = 'force-dynamic';
 
-function getStatusTone(status) {
-  if (status === 'needs_review') {
-    return 'warning';
-  }
-
-  if (status === 'processing') {
-    return 'info';
-  }
-
-  if (status === 'approved' || status === 'completed') {
-    return 'success';
-  }
-
-  return 'neutral';
-}
-
 export default async function HomePage() {
-  const emails = await getEmails();
+  const [stats, emails] = await Promise.all([getDashboardStats(), getEmails()]);
+  const featuredCase = emails.find((email) => email.latestAiResult) || emails[0] || null;
+
+  const quickLinks = [
+    {
+      title: 'Overview',
+      href: '/overview',
+      description: 'Presentation-first framing for the business story and best demo cases.'
+    },
+    {
+      title: 'Inbox',
+      href: '/inbox',
+      description: 'Operational queue for reading emails, uploading files, and opening cases.'
+    },
+    {
+      title: 'Results',
+      href: '/results',
+      description: 'Outcome-first page for AI summaries, routes, extracted fields, and drafts.'
+    },
+    {
+      title: 'Dashboard',
+      href: '/dashboard',
+      description: 'Aggregated metrics for statuses, categories, review backlog, and priorities.'
+    }
+  ];
 
   return (
     <AppShell
-      eyebrow="Phase 2: Inbox"
-      title="AI Intake Assistant"
-      description="A review-ready inbox for email and document intake workflows aimed at Norwegian SMB operations teams."
-      actions={<span className="app-note">Use overview, results, and dashboard for the full demo narrative</span>}
+      eyebrow="Home"
+      title="AI workflow demo home"
+      description="A simple starting point for showing how incoming emails and attachments become structured operational actions for Norwegian SMB teams."
+      actions={
+        <Link href="/help" className="primary-link">
+          Open help
+        </Link>
+      }
     >
+      <section className="hero-grid">
+        <article className="panel spotlight-panel">
+          <div className="panel-header">
+            <div>
+              <h2>What you can show from here</h2>
+              <p className="panel-copy">
+                Start on the home page, jump into the inbox or results in one click, and keep the demo flow understandable for non-technical stakeholders.
+              </p>
+            </div>
+            <span className="panel-kicker">Demo control center</span>
+          </div>
+
+          <div className="showcase-list">
+            <article className="showcase-item">
+              <span className="showcase-index">01</span>
+              <p>Open `Overview` to explain the business story and show why this workflow matters.</p>
+            </article>
+            <article className="showcase-item">
+              <span className="showcase-index">02</span>
+              <p>Move to `Inbox` for the original email, attachment upload, AI processing, and manual review.</p>
+            </article>
+            <article className="showcase-item">
+              <span className="showcase-index">03</span>
+              <p>Use `Results` and `Dashboard` to show concrete AI output and aggregated operations value.</p>
+            </article>
+          </div>
+        </article>
+
+        <article className="panel">
+          <div className="panel-header">
+            <h2>Live snapshot</h2>
+            <span className="panel-kicker">Current seeded state</span>
+          </div>
+          <div className="metric-list">
+            <div className="metric-row">
+              <span>Total cases</span>
+              <strong>{stats.totals.cases}</strong>
+            </div>
+            <div className="metric-row">
+              <span>Processed cases</span>
+              <strong>{stats.totals.processed}</strong>
+            </div>
+            <div className="metric-row">
+              <span>Need review</span>
+              <strong>{stats.totals.needsReview}</strong>
+            </div>
+            <div className="metric-row">
+              <span>Attachments</span>
+              <strong>{stats.totals.attachments}</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section className="quick-link-grid">
+        {quickLinks.map((item) => (
+          <article className="panel quick-link-card" key={item.href}>
+            <div className="panel-header">
+              <h2>{item.title}</h2>
+              <Link href={item.href} className="ghost-link">
+                Open
+              </Link>
+            </div>
+            <p className="panel-copy">{item.description}</p>
+          </article>
+        ))}
+      </section>
+
       <section className="dashboard-strip">
         <article className="summary-card">
-          <span>Cases in inbox</span>
-          <strong>{emails.length}</strong>
+          <span>Inbox cases</span>
+          <strong>{stats.totals.cases}</strong>
         </article>
         <article className="summary-card">
-          <span>Need review</span>
-          <strong>{emails.filter((item) => item.status === 'needs_review').length}</strong>
+          <span>Ready results</span>
+          <strong>{emails.filter((item) => item.latestAiResult).length}</strong>
         </article>
         <article className="summary-card">
-          <span>Attachments</span>
-          <strong>
-            {emails.reduce((total, item) => total + item.attachments.length, 0)}
-          </strong>
+          <span>Review backlog</span>
+          <strong>{stats.totals.needsReview}</strong>
+        </article>
+        <article className="summary-card">
+          <span>Help page</span>
+          <strong>Ready</strong>
         </article>
       </section>
 
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h2>Inbox</h2>
+            <h2>Featured demo case</h2>
             <p className="panel-copy">
-              Seeded cases from PostgreSQL, ready for review and the upcoming AI processing flow.
+              Use this as a quick jump into a concrete example without scanning the whole inbox first.
             </p>
           </div>
-          <span className="panel-kicker">{formatListCount(emails.length, 'case', 'cases')}</span>
+          <Link href="/inbox" className="ghost-link">
+            Browse inbox
+          </Link>
         </div>
 
-        {emails.length === 0 ? (
-          <p className="empty-copy">
-            No cases available. Check that the API is running and that `npm run db:setup` has completed.
-          </p>
-        ) : (
-          <div className="inbox-table">
-            <div className="inbox-head">
-              <span>Case</span>
-              <span>Status</span>
-              <span>Received</span>
-              <span>Attachments</span>
-              <span>Open</span>
+        {featuredCase ? (
+          <article className="feature-card">
+            <div>
+              <p className="row-title">{featuredCase.subject}</p>
+              <p className="row-meta">{featuredCase.sender}</p>
+              <p className="panel-copy">
+                {featuredCase.latestAiResult
+                  ? featuredCase.latestAiResult.summary
+                  : 'Open this case to run AI processing and show the manual review workflow.'}
+              </p>
             </div>
 
-            {emails.map((email) => (
-              <article className="inbox-row" key={email.id}>
-                <div>
-                  <p className="row-title">{email.subject}</p>
-                  <p className="row-meta">{email.sender}</p>
-                </div>
-                <div>
-                  <StatusBadge value={email.status} tone={getStatusTone(email.status)} />
-                </div>
-                <div className="row-meta">{formatDateTime(email.receivedAt)}</div>
-                <div className="row-meta">
-                  {formatListCount(email.attachments.length, 'file', 'files')}
-                </div>
-                <div>
-                  <Link href={`/emails/${email.id}`} className="primary-link">
-                    Review case
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
+            <div className="feature-actions">
+              <Link href={`/emails/${featuredCase.id}`} className="primary-link">
+                Open featured case
+              </Link>
+              <Link href="/results" className="ghost-link">
+                View all results
+              </Link>
+            </div>
+          </article>
+        ) : (
+          <p className="empty-copy">No seeded cases are available right now.</p>
         )}
       </section>
     </AppShell>

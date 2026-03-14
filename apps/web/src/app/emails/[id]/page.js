@@ -40,7 +40,7 @@ export default async function EmailDetailPage({ params }) {
       title={email.subject}
       description="Review the incoming request, inspect attachments, and prepare the case for AI processing."
       actions={
-        <Link href="/" className="primary-link">
+        <Link href="/inbox" className="primary-link">
           Back to inbox
         </Link>
       }

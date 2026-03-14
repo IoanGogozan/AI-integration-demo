@@ -31,7 +31,7 @@ export default async function DashboardPage() {
       title="Workflow dashboard"
       description="A compact operations view for demo metrics, AI processing output, and cases that still need attention."
       actions={
-        <Link href="/" className="primary-link">
+        <Link href="/inbox" className="primary-link">
           Back to inbox
         </Link>
       }

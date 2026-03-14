@@ -25,6 +25,15 @@ Repository structure:
 - `packages/prompts`: prompt assets and schemas
 - `docs`: living project documentation
 
+Frontend pages:
+
+- `/`: home page with quick navigation and a featured case
+- `/help`: usage guide and demo instructions
+- `/overview`: business framing for presentations
+- `/inbox`: operational case list
+- `/results`: processed AI outputs
+- `/dashboard`: aggregate workflow metrics
+
 Language policy:
 
 - Application UI, source code, API contracts, prompts, and new documentation are in English only.
@@ -86,10 +95,11 @@ Current backend endpoints:
 
 Recommended demo flow:
 
-1. Open the inbox and choose a seeded case.
-2. Review the email and attachment text.
-3. Upload an extra file if needed.
-4. Process the case with AI.
-5. Edit the result in manual review.
-6. Approve or complete the case.
-7. Open the dashboard to show operational visibility.
+1. Start on the home page or help page.
+2. Open the inbox and choose a seeded case.
+3. Review the email and attachment text.
+4. Upload an extra file if needed.
+5. Process the case with AI.
+6. Edit the result in manual review.
+7. Approve or complete the case.
+8. Open the results page or dashboard to show business output and operational visibility.
